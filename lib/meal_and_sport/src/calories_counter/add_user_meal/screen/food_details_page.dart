@@ -14,11 +14,13 @@ class FoodDetailsPage extends StatelessWidget{
   final Meal meal;
   final String mealType;
   final int userId;
+  final CaloriesCounterMainBloc caloriesMainBloc;
 
   const FoodDetailsPage({super.key,
     required this.meal,
     required this.mealType,
-    required this.userId
+    required this.userId,
+    required this.caloriesMainBloc
   });
 
   @override
@@ -91,6 +93,7 @@ class FoodDetailsPage extends StatelessWidget{
                 ToggleButton(
                     meal: meal,
                     mealType: mealType,
+                  caloriesMainBloc: caloriesMainBloc,
                 ),
               ],
             ),
@@ -106,11 +109,12 @@ class ToggleButton extends StatefulWidget{
 
   final Meal meal;
   final String mealType;
+  final CaloriesCounterMainBloc caloriesMainBloc;
 
   const ToggleButton({
     super.key,
     required this.meal,
-    required this.mealType
+    required this.mealType, required this.caloriesMainBloc
   });
 
   @override
@@ -191,7 +195,6 @@ class _ToggleButtonState extends State<ToggleButton> {
               decoration: InputDecoration(
                   suffixIcon: IconButton(
                     onPressed: () {
-
                       final model = BlocProvider.of<AddUserMealBloc>(context);
                       setState(() {
                         _controller.clear();
@@ -246,10 +249,10 @@ class _ToggleButtonState extends State<ToggleButton> {
 
                 final model = BlocProvider.of<AddUserMealBloc>(context);
 
-                final userState = BlocProvider.of<UserBloc>(context).state;
+                // final userState = BlocProvider.of<UserBloc>(context).state;
                 final userMealState = model.state;
 
-                if (userState is LoginSuccess) {
+                // if (userState is LoginSuccess) {
                   model.add(
                       AddMealBtnClicked(
                       mealType: widget.mealType.toUpperCase(),
@@ -260,7 +263,7 @@ class _ToggleButtonState extends State<ToggleButton> {
                       calories: userMealState.energyIntake,
                     )
                   );
-                }
+                // }
 
               },
                   child: const Text("Add")
@@ -271,8 +274,7 @@ class _ToggleButtonState extends State<ToggleButton> {
       },
       listener: (context, state) {
 
-                final caloriesCounterBloc = context.read<CaloriesCounterMainBloc>();
-                caloriesCounterBloc.add(ReloadMealList());
+                widget.caloriesMainBloc.add(ReloadMealList());
                 // Listen to CaloriesCounterMainBloc state changes
                    showDialog(
                      context: context,
@@ -286,8 +288,8 @@ class _ToggleButtonState extends State<ToggleButton> {
                             ElevatedButton(
                              child: const Text("OK"),
                              onPressed: () {
-
                                Navigator.popUntil(context, (route) => route.settings.name == "/mealMain");
+
                              },
                            ),
                          ],

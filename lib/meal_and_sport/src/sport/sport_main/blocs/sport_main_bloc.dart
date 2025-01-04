@@ -9,14 +9,21 @@ part 'sport_main_state.dart';
 
 class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
   final SportRepository sportRepository = SportRepository();
-  int userId;
-  DateTime date;
 
-  SportMainBloc({required this.userId, required this.date}): super(const SportMainState(status: SportMainStatus.loading)){
+
+  SportMainBloc(): super(const SportMainState(status: SportMainStatus.loading)){
     on<AddBtnClicked>(_addSportBtnClicked);
     on<LoadUserSportList>(_loadUserSportList);
     on<SportAdded>(_sportAdded);
     on<DeleteSportBtnClicked>(_delete);
+    on<SportLoadUserIdAndDateEvent>(_loadIdAndDate);
+  }
+
+  Future<void> _loadIdAndDate(
+      SportLoadUserIdAndDateEvent event,
+      Emitter<SportMainState> emit
+      )async{
+    emit(state.copyWith(userId: event.userId, date: event.date));
   }
 
   Future<void> _addSportBtnClicked(
@@ -31,8 +38,8 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
       Emitter<SportMainState> emit
       )async{
     emit(state.copyWith(status: SportMainStatus.loading, sportList: {}));
-    final sportList = await sportRepository.getUserSportListByDate(userId, date);
-    final SportSummary sportSummary = await sportRepository.getSportSummary(userId,date);
+    final sportList = await sportRepository.getUserSportListByDate(state.userId!, state.date!);
+    final SportSummary sportSummary = await sportRepository.getSportSummary(state.userId!, state.date!);
     if(sportList.isNotEmpty){
       emit(state.copyWith(status: SportMainStatus.sportListLoaded, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
     }else{
@@ -45,8 +52,8 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
       Emitter<SportMainState> emit
       )async{
     emit(state.copyWith(status: SportMainStatus.loading, sportList: {}));
-    final sportList = await sportRepository.getUserSportListByDate(userId, date);
-    final SportSummary sportSummary = await sportRepository.getSportSummary(userId,date);
+    final sportList = await sportRepository.getUserSportListByDate(state.userId!, state.date!);
+    final SportSummary sportSummary = await sportRepository.getSportSummary(state.userId!, state.date!);
     if(sportList.isNotEmpty){
       emit(state.copyWith(status: SportMainStatus.sportAdded, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
     }else{
@@ -60,8 +67,8 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
       )async{
     emit(state.copyWith(status: SportMainStatus.loading, sportList: {}));
     await sportRepository.deleteUserSport(event.userSportId);
-    final sportList = await sportRepository.getUserSportListByDate(userId, date);
-    final SportSummary sportSummary = await sportRepository.getSportSummary(userId,date);
+    final sportList = await sportRepository.getUserSportListByDate(state.userId!, state.date!);
+    final SportSummary sportSummary = await sportRepository.getSportSummary(state.userId!, state.date!);
     if(sportList.isNotEmpty){
       emit(state.copyWith(status: SportMainStatus.sportDeleted, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
     }else{

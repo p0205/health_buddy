@@ -1,7 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
+import 'package:health_buddy/meal_and_sport/src/user/blocs/user_event.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
+import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
 import '../widgets/buttonDefault.dart';
 import '../widgets/textFieldDefault.dart';
 import '../widgets/textFieldPassword.dart';
@@ -11,8 +16,10 @@ import '../widgets/loadingDefault.dart';
 import '../widgets/popupDialogDefault.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -61,35 +68,67 @@ class _LoginScreenState extends State<LoginScreen> {
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           final token = data['token'];
+          final userId = data['userId'];
+          final email = data['email'];
+          final name = data['name'];
 
-          final prefs = await SharedPreferences.getInstance();
-          if (_rememberMe) {
-            await prefs.setString('email', email);
-            await prefs.setString('password', password);
-          } else {
-            await prefs.remove('email');
-            await prefs.remove('password');
+          // Guard context usage with mounted check
+          if (mounted) {
+            final userBloc = context.read<UserBloc>(); // Safe to use context here
+            userBloc.add(LoginSuccessEvent(userId: userId, email: email, name: name,token:token));
+            final caloriesBloc = context.read<CaloriesCounterMainBloc>();
+            caloriesBloc.add(LoadUserIdAndDateEvent(userId: userId, date: DateTime.now()));
+            final sportBloc = context.read<SportMainBloc>();
+            sportBloc.add(SportLoadUserIdAndDateEvent(userId: userId, date: DateTime.now()));
+            final prefs = await SharedPreferences.getInstance();
+            if (_rememberMe) {
+              await prefs.setString('email', email);
+              await prefs.setString('password', password);
+            } else {
+              await prefs.remove('email');
+              await prefs.remove('password');
+            }
+
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<SportMainBloc>.value(
+                      value: context.read<SportMainBloc>(),
+                    ),
+                    BlocProvider<CaloriesCounterMainBloc>.value(
+                      value: context.read<CaloriesCounterMainBloc>(),
+                    ),
+                  ],
+                  child: MainMenuScreen(token: token),
+                  ),
+                )
+
+            );
           }
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MainMenuScreen(token: token),
-            ),
-          );
         } else {
           final error = jsonDecode(response.body)['message'];
-          showPopupDialog(context, error);
+          if (mounted) {
+            showPopupDialog(context, error);
+          }
         }
       } catch (error) {
-        showPopupDialog(context, 'Failed to login: $error');
+        if (mounted) {
+          showPopupDialog(context, 'Failed to login: $error');
+        }
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
+
 
   void showPopupDialog(BuildContext context, String message, {VoidCallback? onOkPressed}) {
     showDialog(

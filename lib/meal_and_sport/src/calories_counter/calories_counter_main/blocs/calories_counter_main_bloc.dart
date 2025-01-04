@@ -10,14 +10,21 @@ part 'calories_counter_main_state.dart';
 
 class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCounterMainState>{
   final MealApiRepository mealRepository = MealApiRepository();
-  int userId;
-  DateTime date;
 
-  CaloriesCounterMainBloc({required this.userId, required this.date}): super(const CaloriesCounterMainState(status: CaloriesCounterMainStatus.loading)){
+
+  CaloriesCounterMainBloc(): super(const CaloriesCounterMainState(status: CaloriesCounterMainStatus.loading)){
     on<AddBtnClicked>(_addMealBtnClicked);
     on<LoadInitialDataEvent>(_init);
     on<ReloadMealList>(_reload);
     on<DeleteMealBtnClicked>(_delete);
+    on<LoadUserIdAndDateEvent>(_loadIdAndDate);
+  }
+
+  Future<void> _loadIdAndDate(
+      LoadUserIdAndDateEvent event,
+      Emitter<CaloriesCounterMainState> emit
+      )async{
+    emit(state.copyWith(userId: event.userId, date: event.date));
   }
 
   Future<void> _addMealBtnClicked(
@@ -32,8 +39,8 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
       Emitter<CaloriesCounterMainState> emit
   )async{
     emit(state.copyWith(status: CaloriesCounterMainStatus.loading, mealList: {}));
-    final mealList = await mealRepository.getUserMealListByDate(userId, date);
-    final nutritionalSummary = await mealRepository.getNutritionalSummary(userId,date);
+    final mealList = await mealRepository.getUserMealListByDate(state.userId!, state.date!);
+    final nutritionalSummary = await mealRepository.getNutritionalSummary(state.userId!, state.date!);
     emit(state.copyWith(status: CaloriesCounterMainStatus.mealListLoaded, mealList: mealList, summary: nutritionalSummary));
   }
 
@@ -42,8 +49,8 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
       Emitter<CaloriesCounterMainState> emit
       )async{
     emit(state.copyWith(status: CaloriesCounterMainStatus.loading, mealList: {}));
-    final mealList = await mealRepository.getUserMealListByDate(userId, date);
-    final nutritionalSummary = await mealRepository.getNutritionalSummary(userId,date);
+    final mealList = await mealRepository.getUserMealListByDate(state.userId!, state.date!);
+    final nutritionalSummary = await mealRepository.getNutritionalSummary(state.userId!, state.date!);
     emit(state.copyWith(status: CaloriesCounterMainStatus.mealListReloaded, mealList: mealList, summary: nutritionalSummary));
   }
 
@@ -53,12 +60,8 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
       )async{
     emit(state.copyWith(status: CaloriesCounterMainStatus.loading, mealList: {}));
     await mealRepository.deleteUserMeal(event.userMealId);
-    emit(state.copyWith(status: CaloriesCounterMainStatus.loading, mealList: {}));
-    final mealList = await mealRepository.getUserMealListByDate(userId, date);
-    final nutritionalSummary = await mealRepository.getNutritionalSummary(userId,date);
-
-
-
+    final mealList = await mealRepository.getUserMealListByDate(state.userId!, state.date!);
+    final nutritionalSummary = await mealRepository.getNutritionalSummary(state.userId!, state.date!);
     emit(state.copyWith(status: CaloriesCounterMainStatus.mealDeleted, mealList: mealList, summary: nutritionalSummary));
     // emit(state.copyWith(status: CaloriesCounterMainStatus.mealDeleted));
   }

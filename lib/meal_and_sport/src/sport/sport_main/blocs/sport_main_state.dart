@@ -12,12 +12,16 @@ enum SportMainStatus{
 }
 
 class SportMainState extends Equatable{
+  final int? userId;
+  final DateTime? date;
   final Map<String, List<UserSport>?> sportList;
   final SportMainStatus status;
   final SportSummary? sportSummary;
   final String? dateString;
 
   const SportMainState({
+    this.userId,
+    this.date,
     this.sportList = const {},
     this.status = SportMainStatus.initial,
     this.sportSummary,
@@ -28,13 +32,17 @@ class SportMainState extends Equatable{
   List<Object?> get props => [status,sportList,sportSummary];
 
   SportMainState copyWith({
+     int? userId,
+     DateTime? date,
     Map<String, List<UserSport>?>? sportList,
     SportMainStatus? status,
     SportSummary? sportSummary,
     String? dateString
   }){
     return SportMainState(
-      status: status ?? this.status,
+        userId: userId ?? this.userId,
+        date: date ?? this.date,
+        status: status ?? this.status,
       sportList: sportList ?? this.sportList,
       sportSummary: sportSummary ?? this.sportSummary,
       dateString:  dateString ?? this.dateString

@@ -14,6 +14,14 @@ class AddBtnClicked extends CaloriesCounterMainEvent {
   List<Object?> get props => [mealType];
 }
 
+class LoadUserIdAndDateEvent extends CaloriesCounterMainEvent {
+  final int userId;
+  final DateTime date;
+  const LoadUserIdAndDateEvent({required this.userId,required this.date});
+  @override
+  List<Object?> get props => [userId,date];
+}
+
 class LoadInitialDataEvent extends CaloriesCounterMainEvent {}
 
 class ReloadMealList extends CaloriesCounterMainEvent {}

@@ -1,28 +1,33 @@
 
 import 'package:equatable/equatable.dart';
 
-abstract class UserState extends Equatable {
+class UserState extends Equatable {
+
+  final int? userId;
+  final String? email;
+  final String? name;
+  final String? profileIcon;
+  final String? token;
+  const UserState( {this.userId, this.name,this.email, this.profileIcon,this.token});
 
   @override
   List<Object> get props => [];
+
+  UserState copyWith ({
+    final int? userId,
+    final String? email,
+    final String? name,
+    final String? profileIcon,
+    final String? token
+  })
+  {
+    return UserState(
+      userId: userId ?? this.userId,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      profileIcon: profileIcon ?? this.profileIcon,
+      token: token ?? this.token,
+    );
+  }
 }
 
-class LoginInitial extends UserState {}
-
-class LoginLoading extends UserState {}
-
-class LoginSuccess extends UserState {
-  final int userId;
-
-  LoginSuccess({required this.userId});
-  @override
-  List<Object> get props => [userId];
-}
-
-class LoginFailure extends UserState {
-  final String error;
-
-  LoginFailure({required this.error});
-
-  @override
-  List<Object> get props => [error];}

@@ -164,15 +164,15 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
             if(state.status == SearchSportStatus.selected && state.selectedSport!=null) {
               final userState = BlocProvider.of<UserBloc>(context).state;
               int userId;
-              if(userState is LoginSuccess){
-                userId = userState.userId;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddUserSportScreen(sport: state.selectedSport!, userId: userId, date: widget.date),
-                  ),
-                );
-              }
+
+              userId = userState.userId!;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddUserSportScreen(sport: state.selectedSport!, userId: userId, date: widget.date),
+                ),
+              );
+
             }
             else if(state.status == SearchSportStatus.addNewSportSelected){
               Navigator.push(

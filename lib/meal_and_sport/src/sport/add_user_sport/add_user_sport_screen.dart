@@ -249,16 +249,15 @@ class _toggleButtonState extends State<ToggleButton> {
                   child: ElevatedButton(onPressed: () async
                   {
                     final model = BlocProvider.of<AddUserSportBloc>(context);
-                    final userState = BlocProvider.of<UserBloc>(context).state;
 
-                    if (userState is LoginSuccess) {
+
                       model.add(
                           AddSportBtnClicked(
                               durationInHours: state.durationInHours!,
                               caloriesBurnt: state.caloriesBurnt!
                           )
                       );
-                    }
+
                   },
                       child: const Text("Add")
                   ),

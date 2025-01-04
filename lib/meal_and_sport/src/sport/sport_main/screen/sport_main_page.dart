@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../commom_widgets/side_bar.dart';
 import '../../../common_widgets/donut_chart.dart';
+import '../../../user/blocs/user_bloc.dart';
 import '../../search_sport/search_sport_screen.dart';
 import '../../sport_models/sport_summary.dart';
 import '../../sport_models/user_sport.dart';
@@ -20,7 +22,10 @@ class SportMainPage extends StatefulWidget{
 class _SportMainPageState extends State<SportMainPage> {
   @override
   Widget build(BuildContext context) {
-
+    final userBloc = context.read<UserBloc>();
+    final userId = userBloc.state.userId!;
+    final name = userBloc.state.name;
+    final email = userBloc.state.email;
         return Scaffold(
             appBar: AppBar(
               title: const Text("Sport Summary",textAlign: TextAlign.center,),
@@ -30,14 +35,8 @@ class _SportMainPageState extends State<SportMainPage> {
                   fontSize: 25,
                   fontWeight: FontWeight.bold
               ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                iconSize: 30.0,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
             ),
+            drawer: SideBar(userId: userId, userEmail: email!,userName: name!),
             body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),

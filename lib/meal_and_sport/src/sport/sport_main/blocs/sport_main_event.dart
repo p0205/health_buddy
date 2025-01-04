@@ -25,3 +25,11 @@ class DeleteSportBtnClicked extends SportMainEvent{
   List<Object?> get props => [userSportId];
 }
 
+class SportLoadUserIdAndDateEvent extends SportMainEvent{
+  final int userId;
+  final DateTime? date;
+  const SportLoadUserIdAndDateEvent({required this.userId, required this.date});
+  @override
+  List<Object?> get props => [userId,date];
+}
+
