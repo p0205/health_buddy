@@ -29,7 +29,7 @@ class SportMainState extends Equatable{
   });
 
   @override
-  List<Object?> get props => [status,sportList,sportSummary];
+  List<Object?> get props => [status,sportList,sportSummary,date];
 
   SportMainState copyWith({
      int? userId,

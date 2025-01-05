@@ -17,6 +17,15 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
     on<SportAdded>(_sportAdded);
     on<DeleteSportBtnClicked>(_delete);
     on<SportLoadUserIdAndDateEvent>(_loadIdAndDate);
+    on<SportDateChangedEvent>(_onDateChanged);
+  }
+
+  Future<void> _onDateChanged(
+      SportDateChangedEvent event,
+      Emitter<SportMainState> emit
+      )async{
+    emit(state.copyWith(date: event.date));
+    add(LoadUserSportList());
   }
 
   Future<void> _loadIdAndDate(

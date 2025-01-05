@@ -1,4 +1,5 @@
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
@@ -7,7 +8,6 @@ import '../../../../../commom_widgets/side_bar.dart';
 import '../../../common_widgets/donut_chart.dart';
 import '../../models/meal_summary.dart';
 import '../../models/user_meal.dart';
-import '../../search_meal/blocs/search_meal_bloc.dart';
 import '../../search_meal/screen/search_food_screen.dart';
 import '../blocs/calories_counter_main_bloc.dart';
 
@@ -28,6 +28,7 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
     final userId = userBloc.state.userId!;
     final name = userBloc.state.name;
     final email = userBloc.state.email;
+
 
           return MultiBlocProvider(
             providers: [
@@ -59,15 +60,34 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Text(
-                              summary.date,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  fontFamily: 'Itim',
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  onPressed: () => _navigateDay(-1),
+                                  icon: const Icon(Icons.chevron_left),
+                                ),
+                                GestureDetector(
+                                  onTap: (){
+                                    _selectDate(context);
+                                  },
+                                  child: Text(
+                                    summary.date,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                        fontFamily: 'Itim',
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ),
+                                !isToday ?
+                                  IconButton(
+                                    onPressed: () => _navigateDay(1),
+                                    icon: const Icon(Icons.chevron_right),
+                                  ) : const SizedBox(width: 48),
+                              ],
                             ),
                             CaloriesChart(summary: summary),
                             const SizedBox(height: 30),
@@ -104,6 +124,46 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                 )
             ),
           );
+  }
+
+
+  bool get isToday {
+    final now = DateTime.now();
+    return widget.bloc.state.date?.year == now.year &&
+        widget.bloc.state.date?.month == now.month &&
+        widget.bloc.state.date?.day == now.day;
+  }
+
+
+  void _navigateDay(int days) {
+    widget.bloc.add(
+        DateChangedEvent(
+            date: widget.bloc.state.date!
+                .add(Duration(days: days))));
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: widget.bloc.state.date,
+      firstDate: DateTime(2020),
+      lastDate:  DateTime(now.year, now.month, now.day),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    widget.bloc.add(DateChangedEvent(date: picked!));
   }
 }
 
@@ -196,11 +256,11 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                 Expanded(
                   flex: 4,
                   child: Text(
-
                     "$totalCaloriesString kcal",
                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
                   ),
                 ),
+                isToday ?
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
@@ -214,14 +274,13 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                     );
                   },
                   child: const Icon(Icons.add), // )
-                ),
+                ) : const SizedBox.shrink()
 
               ],
             ),
             const SizedBox(height: 10),
             widget.meals == null ?
               const Text(
-
                   "No record",
                   style: TextStyle(color: Colors.grey ,fontSize: 13, fontWeight: FontWeight.normal),
               )
@@ -243,6 +302,7 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                       children: [
 
                         Text("${meal.calories!.toStringAsFixed(2)} kcal"),
+                        isToday?
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.redAccent),
                           onPressed: () {
@@ -283,7 +343,7 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
                               ),
                             );
                           },
-                        ),
+                        ): const SizedBox.shrink(),
                       ],
                     ),
                   );
@@ -296,6 +356,14 @@ class _FoodIntakeCardState extends State<FoodIntakeCard> {
       ),
     );
   }
+
+  bool get isToday {
+    final now = DateTime.now();
+    return widget.bloc.state.date?.year == now.year &&
+        widget.bloc.state.date?.month == now.month &&
+        widget.bloc.state.date?.day == now.day;
+  }
+
 }
 
 

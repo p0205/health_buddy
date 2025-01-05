@@ -26,7 +26,7 @@ class CaloriesCounterMainState extends Equatable{
 });
 
   @override
-  List<Object?> get props => [status,mealList,summary];
+  List<Object?> get props => [status,mealList,summary,date];
 
   CaloriesCounterMainState copyWith({
     Map<String, List<UserMeal>?>? mealList,

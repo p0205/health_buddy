@@ -18,8 +18,16 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
     on<ReloadMealList>(_reload);
     on<DeleteMealBtnClicked>(_delete);
     on<LoadUserIdAndDateEvent>(_loadIdAndDate);
+    on<DateChangedEvent>(_onDateChanged);
   }
 
+  Future<void> _onDateChanged(
+      DateChangedEvent event,
+      Emitter<CaloriesCounterMainState> emit
+      )async{
+    emit(state.copyWith(date: event.date));
+    add(LoadInitialDataEvent());
+  }
   Future<void> _loadIdAndDate(
       LoadUserIdAndDateEvent event,
       Emitter<CaloriesCounterMainState> emit

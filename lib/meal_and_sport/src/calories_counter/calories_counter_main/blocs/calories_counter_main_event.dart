@@ -33,3 +33,11 @@ class DeleteMealBtnClicked extends CaloriesCounterMainEvent{
   List<Object?> get props => [userMealId];
 }
 
+class DateChangedEvent extends CaloriesCounterMainEvent{
+  final DateTime date;
+  const DateChangedEvent({required this.date});
+  @override
+  List<Object?> get props => [date];
+}
+
+

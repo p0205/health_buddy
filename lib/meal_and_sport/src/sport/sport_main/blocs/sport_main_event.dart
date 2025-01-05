@@ -33,3 +33,10 @@ class SportLoadUserIdAndDateEvent extends SportMainEvent{
   List<Object?> get props => [userId,date];
 }
 
+class SportDateChangedEvent extends SportMainEvent{
+  final DateTime date;
+  const SportDateChangedEvent({required this.date});
+  @override
+  List<Object?> get props => [date];
+}
+

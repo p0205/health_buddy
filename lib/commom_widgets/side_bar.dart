@@ -61,6 +61,7 @@ class SideBar extends StatelessWidget {
               onTap: () {
                 final bloc = context.read<CaloriesCounterMainBloc>();
                 // final sportBloc = context.read<SportMainBloc>();
+                bloc.add(DateChangedEvent(date: DateTime.now()));
                 bloc.add(LoadInitialDataEvent());
                 Navigator.pushReplacement(
                   context,
@@ -81,6 +82,7 @@ class SideBar extends StatelessWidget {
               title: const Text('Calories Burnt'),
               onTap: () {
                 final bloc = context.read<SportMainBloc>();
+                bloc.add(SportDateChangedEvent(date: DateTime.now()));
                 bloc.add(LoadUserSportList());
                 Navigator.pushReplacement(
                   context,
@@ -88,7 +90,7 @@ class SideBar extends StatelessWidget {
                       builder: (context) {
                         return BlocProvider.value(
                             value: bloc,
-                            child: SportMainPage(),
+                            child: SportMainPage(bloc:bloc),
                           );
                       }, settings: const RouteSettings(name: "/sportMain")
                   ),
