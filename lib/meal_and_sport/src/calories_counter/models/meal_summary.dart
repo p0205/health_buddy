@@ -1,4 +1,5 @@
 class MealSummary {
+  final double caloriesIntake;
   final double caloriesLeft;
   final double carbsIntake;
   final double proteinIntake;
@@ -6,6 +7,7 @@ class MealSummary {
   final String date;
 
   MealSummary({
+    required this.caloriesIntake,
     required this.caloriesLeft,
     required this.carbsIntake,
     required this.proteinIntake,
@@ -16,6 +18,7 @@ class MealSummary {
   // Factory constructor to create a NutritionalSummary from a map (parsed JSON)
   factory MealSummary.fromJson(Map<String, dynamic> json) {
     return MealSummary(
+      caloriesIntake: json['caloriesIntake']?.toDouble() ?? 0.0,
       caloriesLeft: json['caloriesLeft']?.toDouble() ?? 0.0,
       carbsIntake: json['carbsIntake']?.toDouble() ?? 0.0,
       proteinIntake: json['proteinIntake']?.toDouble() ?? 0.0,
@@ -27,6 +30,7 @@ class MealSummary {
   // Method to convert NutritionalSummary to a map (if needed for sending to an API)
   Map<String, dynamic> toJson() {
     return {
+      'caloriesIntake': caloriesIntake,
       'caloriesLeft': caloriesLeft,
       'carbsIntake': carbsIntake,
       'proteinIntake': proteinIntake,
