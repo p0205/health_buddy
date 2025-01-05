@@ -56,7 +56,7 @@ class SideBar extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.fastfood),
+              leading: const Icon(Icons.restaurant),
               title: const Text('Calories Intake'),
               onTap: () {
                 final bloc = context.read<CaloriesCounterMainBloc>();
@@ -79,7 +79,7 @@ class SideBar extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.local_fire_department),
-              title: const Text('Calories Burnt'),
+              title: const Text('Calories Burned'),
               onTap: () {
                 final bloc = context.read<SportMainBloc>();
                 bloc.add(SportDateChangedEvent(date: DateTime.now()));

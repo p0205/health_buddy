@@ -13,7 +13,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       LoginSuccessEvent event,
       Emitter<UserState> emit,
       ) async {
+    print("ENter user bloc?????????");
     emit(state.copyWith(userId : event.userId, email: event.email, name: event.name,token: event.token));
+
   }
 
   // Future<void> _onLoginSubmitted(

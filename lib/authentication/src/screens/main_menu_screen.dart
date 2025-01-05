@@ -86,75 +86,63 @@ class MainMenuScreen extends StatelessWidget {
     final email = bloc.state.email;
     final id = bloc.state.userId;
 
-    return MultiBlocProvider(
-    providers: [
-      BlocProvider.value(
-        value: context.read<CaloriesCounterMainBloc>(),
+    final caloriesBurnt = context.read<SportMainBloc>().state.sportSummary?.totalCalsBurnt;
+    final caloriesIntake = context.read<CaloriesCounterMainBloc>().state.summary?.caloriesIntake;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Health Buddy'),
       ),
-      BlocProvider.value(
-        value: context.read<SportMainBloc>(),
-      ),
-      // BlocProvider<SportMainBloc>(
-      //   create: (context) =>
-      //       SportMainBloc(userId: id!,date: DateTime.now()),
-      // ),
-    ],
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Health Buddy'),
-        ),
-        drawer: SideBar(userId: id!, userEmail: email!,userName: name!),
-        body: SafeArea(
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/BACKGROUND.png'),
-                fit: BoxFit.cover,
+      drawer: SideBar(userId: id!, userEmail: email!,userName: name!),
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/BACKGROUND.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 100.0, bottom: 16.0), // Adjusted top padding
+                child: CircleAvatar(
+                  radius: 100.0,
+                  backgroundImage: AssetImage('assets/images/LOGO.png'),
+                ),
               ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 100.0, bottom: 16.0), // Adjusted top padding
-                  child: CircleAvatar(
-                    radius: 100.0,
-                    backgroundImage: AssetImage('assets/images/LOGO.png'),
-                  ),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to profile edit screen
+                },
+                child: Text('Edit Profile'),
+              ),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  padding: EdgeInsets.all(16.0),
+                  children: [
+                    _buildStatCard('Task Completed', '0', Icons.task_alt),
+                    _buildStatCard('Calories Burned', '$caloriesBurnt kcal', Icons.local_fire_department),
+                    _buildStatCard('Today Performance', '0%', Icons.show_chart),
+                    _buildStatCard('Calories Intake', '$caloriesIntake kcal', Icons.restaurant),
+                  ],
                 ),
-                ElevatedButton(
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
                   onPressed: () {
-                    // Navigate to profile edit screen
+                    _logout(context);
                   },
-                  child: Text('Edit Profile'),
+                  child: Text('Logout'),
                 ),
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    padding: EdgeInsets.all(16.0),
-                    children: [
-                      _buildStatCard('Task Completed', '0', Icons.task_alt),
-                      _buildStatCard('Calories Burned', '0 kcal', Icons.local_fire_department),
-                      _buildStatCard('Today Performance', '0%', Icons.show_chart),
-                      _buildStatCard('Calories Intake', '0 kcal', Icons.restaurant),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _logout(context);
-                    },
-                    child: Text('Logout'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

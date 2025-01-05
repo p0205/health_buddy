@@ -28,6 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _rememberMe = false;
+  bool _isSportBlocLoaded = false;
+  bool _isCaloriesBlocLoaded = false;
 
   @override
   void initState() {
@@ -74,12 +76,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
           // Guard context usage with mounted check
           if (mounted) {
+
             final userBloc = context.read<UserBloc>(); // Safe to use context here
             userBloc.add(LoginSuccessEvent(userId: userId, email: email, name: name,token:token));
+
             final caloriesBloc = context.read<CaloriesCounterMainBloc>();
             caloriesBloc.add(LoadUserIdAndDateEvent(userId: userId, date: DateTime.now()));
+            caloriesBloc.add(LoadInitialDataEvent());
             final sportBloc = context.read<SportMainBloc>();
             sportBloc.add(SportLoadUserIdAndDateEvent(userId: userId, date: DateTime.now()));
+            sportBloc.add(LoadUserSportList());
             final prefs = await SharedPreferences.getInstance();
             if (_rememberMe) {
               await prefs.setString('email', email);
@@ -89,25 +95,23 @@ class _LoginScreenState extends State<LoginScreen> {
               await prefs.remove('password');
             }
 
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider<SportMainBloc>.value(
-                      value: context.read<SportMainBloc>(),
-                    ),
-                    BlocProvider<CaloriesCounterMainBloc>.value(
-                      value: context.read<CaloriesCounterMainBloc>(),
-                    ),
-                  ],
-                  child: MainMenuScreen(token: token),
-                  ),
-                )
-
-            );
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) =>
+            //     MultiBlocProvider(
+            //       providers: [
+            //         BlocProvider<SportMainBloc>.value(
+            //           value: context.read<SportMainBloc>(),
+            //         ),
+            //         BlocProvider<CaloriesCounterMainBloc>.value(
+            //           value: context.read<CaloriesCounterMainBloc>(),
+            //         ),
+            //       ],
+            //       child: MainMenuScreen(token: token),
+            //       ),
+            //     )
+            // );
           }
         } else {
           final error = jsonDecode(response.body)['message'];
@@ -143,143 +147,193 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/BACKGROUND.png'),
-              fit: BoxFit.cover,
+  void _checkAllBlocsLoaded(BuildContext context) {
+    if (_isSportBlocLoaded && _isCaloriesBlocLoaded) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MultiBlocProvider(
+            providers: [
+              BlocProvider<SportMainBloc>.value(
+                value: context.read<SportMainBloc>(),
+              ),
+              BlocProvider<CaloriesCounterMainBloc>.value(
+                value: context.read<CaloriesCounterMainBloc>(),
+              ),
+            ],
+            child: MainMenuScreen(
+              token: 'YourTokenHere', // Replace with the actual token
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 45),
-              Center(
-                child: Text(
-                  'Health Buddy',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    shadows: [
-                      Shadow(
-                        color: Colors.grey.withOpacity(0.6),
-                        offset: Offset(2, 2),
-                        blurRadius: 4,
-                      ),
-                    ],
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SportMainBloc, SportMainState>(
+          listener: (context, state) {
+              setState(() {
+                _isSportBlocLoaded = true;
+              });
+              _checkAllBlocsLoaded(context);
+          },
+          listenWhen: (context, state) {
+            return (state.status == SportMainStatus.sportListLoaded);
+          },
+        ),
+        BlocListener<CaloriesCounterMainBloc, CaloriesCounterMainState>(
+          listener: (context, state) {
+              setState(() {
+                _isCaloriesBlocLoaded = true;
+              });
+              _checkAllBlocsLoaded(context);
+
+          },
+          listenWhen: (context, state) {
+            return (state.status == CaloriesCounterMainStatus.mealListLoaded);
+          },
+        ),
+      ],
+      child: Scaffold(
+        body: SafeArea(
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/BACKGROUND.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 45),
+                Center(
+                  child: Text(
+                    'Health Buddy',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      shadows: [
+                        Shadow(
+                          color: Colors.grey.withOpacity(0.6),
+                          offset: Offset(2, 2),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            children: [
-                              Image.asset(
-                                'assets/images/LOGO.png',
-                                width: 180,
-                                height: 180,
-                              ),
-                              SizedBox(height: 8.0),
-                              Text(
-                                'LOGIN',
-                                style: TextStyle(
-                                  fontSize: 45.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(
+                              children: [
+                                Image.asset(
+                                  'assets/images/LOGO.png',
+                                  width: 180,
+                                  height: 180,
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 22.0),
-                          DefaultTextFormField(
-                            controller: _emailController,
-                            labelText: 'Email',
-                            prefixIcon: Icons.email,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              } else if (!RegExp(
-                                  r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-                                  .hasMatch(value)) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 16.0),
-                          PasswordTextFormField(
-                            controller: _passwordController,
-                            labelText: 'Password',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: _rememberMe,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _rememberMe = value ?? false;
-                                  });
-                                },
-                              ),
-                              Text(
-                                'Remember Me',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  color: Colors.black87,
+                                SizedBox(height: 8.0),
+                                Text(
+                                  'LOGIN',
+                                  style: TextStyle(
+                                    fontSize: 45.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 16.0),
-                          _isLoading
-                              ? LoadingIndicator()
-                              : DefaultButton(
-                            text: 'Login',
-                            onPressed: _login,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => FirstRegisterPage()),
-                              );
-                            },
-                            child: Text(
-                              'Don’t have an account? Register here',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: const Color(0xFF1B5E20),
-                                decoration: TextDecoration.underline,
+                              ],
+                            ),
+                            SizedBox(height: 22.0),
+                            DefaultTextFormField(
+                              controller: _emailController,
+                              labelText: 'Email',
+                              prefixIcon: Icons.email,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                } else if (!RegExp(
+                                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                                    .hasMatch(value)) {
+                                  return 'Please enter a valid email';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16.0),
+                            PasswordTextFormField(
+                              controller: _passwordController,
+                              labelText: 'Password',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your password';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _rememberMe = value ?? false;
+                                    });
+                                  },
+                                ),
+                                Text(
+                                  'Remember Me',
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 16.0),
+                            _isLoading
+                                ? LoadingIndicator()
+                                : DefaultButton(
+                              text: 'Login',
+                              onPressed: _login,
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => FirstRegisterPage()),
+                                );
+                              },
+                              child: Text(
+                                'Don’t have an account? Register here',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: const Color(0xFF1B5E20),
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
