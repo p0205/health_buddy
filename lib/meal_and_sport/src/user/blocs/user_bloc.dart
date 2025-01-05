@@ -5,17 +5,23 @@ import 'package:health_buddy/meal_and_sport/src/user/blocs/user_state.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   // final UserRepository userRepository;
 
-  UserBloc() : super(LoginSuccess(userId:1)) {
-    on<LoginSubmitted>(_onLoginSubmitted);
-    on<LoginReset>(_onLoginReset);
+  UserBloc() : super(const UserState()) {
+    on<LoginSuccessEvent>(_setUserInfo);
+    // on<LoginReset>(_onLoginReset);
   }
-
-  Future<void> _onLoginSubmitted(
-      LoginSubmitted event,
+  Future<void> _setUserInfo(
+      LoginSuccessEvent event,
       Emitter<UserState> emit,
       ) async {
-    int id = 1;
-    emit(LoginSuccess(userId: 1));
+    emit(state.copyWith(userId : event.userId, email: event.email, name: event.name,token: event.token));
+  }
+
+  // Future<void> _onLoginSubmitted(
+  //     LoginSubmitted event,
+  //     Emitter<UserState> emit,
+  //     ) async {
+  //   int id = 1;
+  //   emit(LoginSuccess(userId: 1));
     // emit(LoginLoading());
     // try {
       // final isSuccess = await userRepository.login(
@@ -31,9 +37,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     // } catch (e) {
     //   emit(LoginFailure(error: e.toString()));
     // }
-  }
+  // }
 
-  void _onLoginReset(LoginReset event, Emitter<UserState> emit) {
-    emit(LoginInitial());
-  }
+  // void _onLoginReset(LoginReset event, Emitter<UserState> emit) {
+  //   emit(LoginInitial());
+  // }
+
 }

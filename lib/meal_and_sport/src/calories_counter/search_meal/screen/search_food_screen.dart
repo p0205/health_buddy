@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_buddy/commom_widgets/side_bar.dart';
+import 'package:health_buddy/meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
 import '../../../user/blocs/user_bloc.dart';
 import '../../../user/blocs/user_state.dart';
 import '../../add_meal/add_meal_screen.dart';
@@ -9,8 +11,9 @@ import '../../add_user_meal/screen/food_details_page.dart';
 import '../blocs/search_meal_bloc.dart';
 
 class SearchPage extends StatelessWidget {
-  const SearchPage({super.key, required this.mealType});
+  const SearchPage({super.key, required this.mealType, required this.caloriesMainBloc});
   final String mealType;
+  final CaloriesCounterMainBloc caloriesMainBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class SearchPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: DebouncedSearchBar(mealType: mealType),
+        child: DebouncedSearchBar(mealType: mealType, caloriesMainBloc: caloriesMainBloc,),
       ),
     );
   }
@@ -29,8 +32,9 @@ class SearchPage extends StatelessWidget {
 
 class DebouncedSearchBar extends StatefulWidget {
 
-  const DebouncedSearchBar({super.key, required this.mealType});
+  const DebouncedSearchBar({super.key, required this.mealType, required this.caloriesMainBloc});
   final String mealType;
+  final CaloriesCounterMainBloc caloriesMainBloc;
 
   @override
   State<DebouncedSearchBar> createState() => _DebouncedSearchBarState();
@@ -40,22 +44,30 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final model = BlocProvider.of<SearchFoodBloc>(context);
+    print("SEARCHHHHHH");
+    print(model.state.status);
     return SearchAnchor(
       searchController: _searchController,
-      builder: (BuildContext context, SearchController controller) {
+      builder: (context, controller) {
         return SearchBar(
           key: UniqueKey(),
           controller: controller,
           leading: const Icon(Icons.search),
           hintText: "Search for a food",
           onTap: () {
+            final model = BlocProvider.of<SearchFoodBloc>(context);
+            print("SEARCHHHHHH2222");
+            print(model.state.status);
             controller.openView();
           },
         );
       },
-      suggestionsBuilder: (context, controller) async {
-        final model = BlocProvider.of<SearchFoodBloc>(context);
-        model.add(SearchQueryChanged(query: controller.text));
+      suggestionsBuilder: (BuildContext context, controller) async {
+        final bloc = context.read<SearchFoodBloc>();
+        print("SEARCHHHHHH333333");
+        print(bloc.state.status);
+        bloc.add(SearchQueryChanged(query: controller.text));
         return [
           BlocConsumer<SearchFoodBloc, SearchFoodState>(
             builder: (context, state) {
@@ -142,19 +154,19 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
               if(state.status == SearchFoodStatus.selected && state.selectedFood != null){
                 final userState = BlocProvider.of<UserBloc>(context).state;
                 int userId;
-                if (userState is LoginSuccess) {
-                  userId = userState.userId;
+                // if (userState is LoginSuccess) {
+                  userId = userState.userId!;
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FoodDetailsPage(
+                      builder: (context) =>
+                      FoodDetailsPage(
                         meal: state.selectedFood!,
                         mealType: widget.mealType,
-                        userId: userId,
+                        userId: userId, caloriesMainBloc: widget.caloriesMainBloc,
                       ),
-                    ),
-                  );
-                }
+                    ));
+                // }
               }
               else if(state.status == SearchFoodStatus.addNewMealSelected){
                 Navigator.push(

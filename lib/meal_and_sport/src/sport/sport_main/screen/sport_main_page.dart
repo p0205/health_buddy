@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../commom_widgets/side_bar.dart';
 import '../../../common_widgets/donut_chart.dart';
+import '../../../user/blocs/user_bloc.dart';
 import '../../search_sport/search_sport_screen.dart';
 import '../../sport_models/sport_summary.dart';
 import '../../sport_models/user_sport.dart';
@@ -9,9 +11,8 @@ import '../blocs/sport_main_bloc.dart';
 
 class SportMainPage extends StatefulWidget{
 
-
-
-  const SportMainPage({super.key});
+  final SportMainBloc bloc;
+  const SportMainPage({super.key, required this.bloc});
 
   @override
   State<SportMainPage> createState() => _SportMainPageState();
@@ -20,7 +21,10 @@ class SportMainPage extends StatefulWidget{
 class _SportMainPageState extends State<SportMainPage> {
   @override
   Widget build(BuildContext context) {
-
+    final userBloc = context.read<UserBloc>();
+    final userId = userBloc.state.userId!;
+    final name = userBloc.state.name;
+    final email = userBloc.state.email;
         return Scaffold(
             appBar: AppBar(
               title: const Text("Sport Summary",textAlign: TextAlign.center,),
@@ -30,144 +34,197 @@ class _SportMainPageState extends State<SportMainPage> {
                   fontSize: 25,
                   fontWeight: FontWeight.bold
               ),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                iconSize: 30.0,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
             ),
+            drawer: SideBar(userId: userId, userEmail: email!,userName: name!),
             body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: BlocBuilder<SportMainBloc,SportMainState>(
                   builder: (BuildContext context, SportMainState state) {
-
-                    final model = context.read<SportMainBloc>();
-                    final sportList = model.state.sportList;
-                    final summary = model.state.sportSummary;
-                    final List<String> sectionOrder = [];
-                    sportList.forEach((key, value) {
-                      sectionOrder.add(key); });
                     if (state.status == SportMainStatus.loading) {
                       return  const Padding(
-                       padding: EdgeInsets.all(10.0),
-                       child: CircularProgressIndicator()
+                          padding: EdgeInsets.all(10.0),
+                          child: CircularProgressIndicator()
                       );
-                    }
+                    }else {
+                      final model = context.read<SportMainBloc>();
+                      final sportList = model.state.sportList;
+                      final summary = model.state.sportSummary;
+                      final List<String> sectionOrder = [];
+                      sportList.forEach((key, value) {
+                        sectionOrder.add(key);
+                      });
 
-                    if(state.status == SportMainStatus.noRecordFound){
                       return Column(
                         children: [
-                          Text(
-                            state.dateString!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontFamily: 'Itim',
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: Center(child: Text("No results found")),
-                          ),
-                          ElevatedButton(onPressed: (){
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SearchSportScreen(date: state.dateString!),
-                              ),
-                            );
-                          },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                foregroundColor: Colors.white,
-
-                                padding: const EdgeInsets.all(10),
-                              ),
-                              child: const Text("Add New Sport"))
-                        ],
-                      );
-                    }
-
-                  return Column(
-                    children: [
-                      Text(
-                        summary!.date,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            fontFamily: 'Itim',
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      Column(
-                          children: [
-                          CaloriesChart(summary: summary),
-                          const SizedBox(height: 30),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Padding(
-                                padding:  EdgeInsets.symmetric(horizontal: 8.0),
-                                child:  Text(
-                                  "Workout List",
-                                  textAlign: TextAlign.start,
-                                  style: TextStyle(
+                              IconButton(
+                                onPressed: () => _navigateDay(-1),
+                                icon: const Icon(Icons.chevron_left),
+                              ),
+                              GestureDetector(
+                                onTap: (){
+                                  _selectDate(context);
+                                },
+                                child: Text(
+                                  widget.bloc.state.date.toString().split(' ')[0],
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
                                       fontFamily: 'Itim',
-                                      fontSize: 23,
+                                      color: Colors.black,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold
                                   ),
                                 ),
                               ),
-                              ElevatedButton(onPressed: (){
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SearchSportScreen(date: summary.date),
-                                  ),
-                                );
-                              },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blueAccent,
-                                    foregroundColor: Colors.white,
-                                    shape: const CircleBorder(),
-                                    padding: const EdgeInsets.all(10),
-                                  ),
-                                  child: const Icon(Icons.add))
+                              if (!isToday)
+                                IconButton(
+                                  onPressed: () => _navigateDay(1),
+                                  icon: const Icon(Icons.chevron_right),
+                                )
+                              else
+                                const SizedBox(width: 48),
                             ],
                           ),
+                          (state.status == SportMainStatus.noRecordFound) ?
+                            Column(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Center(child: Text("No results found")),
+                                ),
+                                isToday ?
+                                ElevatedButton(onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          SearchSportScreen(
+                                              date: summary!.date),
+                                    ),
+                                  );
+                                },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blueAccent,
+                                      foregroundColor: Colors.white,
 
-                          ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: summary.calsBurntByType.length,
-                              itemBuilder: (context,index){
-                                final String sportType = sectionOrder[index];  // Access the section name from predefined order
-                                List<UserSport>? sports = sportList[sportType];  // Get the meals for this section
-                                double totalCalsBurnt = summary.calsBurntByType[sportType]!;
-                                return SportCard(
-                                  totalCalsBurnt: totalCalsBurnt,
-                                  sportType: sportType, // For each mealType, has one FoodIntake card
-                                  sports: sports,
-                                );
-                              })
-                          ],
-                        )
+                                      padding: const EdgeInsets.all(10),
+                                    ),
+                                    child: const Text("Add New Sport")) : const SizedBox.shrink(),
+                              ],
+                            ) :
+                          Column(
+                            children: [
+                              CaloriesChart(summary: summary!),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.0),
+                                    child: Text(
+                                      "Workout List",
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                          fontFamily: 'Itim',
+                                          fontSize: 23,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  ),
+                                  isToday ?
+                                  ElevatedButton(onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            SearchSportScreen(
+                                                date: summary.date),
+                                      ),
+                                    );
+                                  },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blueAccent,
+                                        foregroundColor: Colors.white,
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(10),
+                                      ),
+                                      child: const Icon(Icons.add)): const SizedBox.shrink(),
+                                ]
+                              ),
+
+                              ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: summary.calsBurntByType.length,
+                                  itemBuilder: (context, index) {
+                                    final String sportType = sectionOrder[index]; // Access the section name from predefined order
+                                    List<
+                                        UserSport>? sports = sportList[sportType]; // Get the meals for this section
+                                    double totalCalsBurnt = summary
+                                        .calsBurntByType[sportType]!;
+                                    return SportCard(
+                                      totalCalsBurnt: totalCalsBurnt,
+                                      sportType: sportType,
+                                      // For each mealType, has one FoodIntake card
+                                      sports: sports,
+                                      date: model.state.date!
+                                    );
+                                  })
+                            ],
+                          )
 
 
-
-                    ],
-                  );
-                },
+                        ],
+                      );
+                    }
+                    },
               ),
               ),
             )
         );
+  }
+
+  bool get isToday {
+    final now = DateTime.now();
+    return widget.bloc.state.date?.year == now.year &&
+        widget.bloc.state.date?.month == now.month &&
+        widget.bloc.state.date?.day == now.day;
+  }
+
+
+  void _navigateDay(int days) {
+    widget.bloc.add(
+        SportDateChangedEvent(
+            date: widget.bloc.state.date!
+                .add(Duration(days: days))));
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: widget.bloc.state.date,
+      firstDate: DateTime(2020),
+      lastDate:  DateTime(now.year, now.month, now.day),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    widget.bloc.add(SportDateChangedEvent(date: picked!));
   }
 }
 
@@ -219,12 +276,13 @@ class SportCard extends StatefulWidget {
   final double totalCalsBurnt;
   final String sportType;
   final List<UserSport>? sports;
+  final DateTime date;
 
   const SportCard({
     super.key,
     required this.sportType,
     required this.totalCalsBurnt,
-    this.sports,
+    this.sports, required this.date,
   });
 
   @override
@@ -286,6 +344,7 @@ class _SportCardState extends State<SportCard> {
                     mainAxisSize: MainAxisSize.min, // To keep the row compact
                     children: [
                       Text("${sport.caloriesBurnt.toStringAsFixed(2)} kcal"),
+                      isToday ?
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.redAccent),
                         onPressed: () {
@@ -327,7 +386,7 @@ class _SportCardState extends State<SportCard> {
                           );
 
                         },
-                      ),
+                      ): const SizedBox.shrink(),
                     ],
                   ),
                 );
@@ -340,6 +399,14 @@ class _SportCardState extends State<SportCard> {
       ),
     );
   }
+
+  bool get isToday {
+    final now = DateTime.now();
+    return widget.date.year == now.year &&
+        widget.date.month == now.month &&
+        widget.date.day == now.day;
+  }
+
 }
 
 

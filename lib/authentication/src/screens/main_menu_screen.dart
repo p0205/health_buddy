@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../commom_widgets/side_bar.dart';
+import '../../../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
+import '../../../meal_and_sport/src/calories_counter/search_meal/blocs/search_meal_bloc.dart';
+import '../../../meal_and_sport/src/sport/search_sport/bloc/search_sport_bloc.dart';
+import '../../../meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
+import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
 import 'login_screen.dart';
 
 // Reusable Popup Dialog Function
@@ -74,57 +81,80 @@ class MainMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/BACKGROUND.png'),
-              fit: BoxFit.cover,
+    final bloc = context.read<UserBloc>();
+    final name = bloc.state.name;
+    final email = bloc.state.email;
+    final id = bloc.state.userId;
+
+    return MultiBlocProvider(
+    providers: [
+      BlocProvider.value(
+        value: context.read<CaloriesCounterMainBloc>(),
+      ),
+      BlocProvider.value(
+        value: context.read<SportMainBloc>(),
+      ),
+      // BlocProvider<SportMainBloc>(
+      //   create: (context) =>
+      //       SportMainBloc(userId: id!,date: DateTime.now()),
+      // ),
+    ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Health Buddy'),
+        ),
+        drawer: SideBar(userId: id!, userEmail: email!,userName: name!),
+        body: SafeArea(
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/BACKGROUND.png'),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 100.0, bottom: 16.0), // Adjusted top padding
-                child: CircleAvatar(
-                  radius: 100.0,
-                  backgroundImage: AssetImage('assets/images/LOGO.png'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 100.0, bottom: 16.0), // Adjusted top padding
+                  child: CircleAvatar(
+                    radius: 100.0,
+                    backgroundImage: AssetImage('assets/images/LOGO.png'),
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to profile edit screen
-                },
-                child: Text('Edit Profile'),
-              ),
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  padding: EdgeInsets.all(16.0),
-                  children: [
-                    _buildStatCard('Task Completed', '0', Icons.task_alt),
-                    _buildStatCard('Calories Burned', '0 kcal', Icons.local_fire_department),
-                    _buildStatCard('Today Performance', '0%', Icons.show_chart),
-                    _buildStatCard('Calories Intake', '0 kcal', Icons.restaurant),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
+                ElevatedButton(
                   onPressed: () {
-                    _logout(context);
+                    // Navigate to profile edit screen
                   },
-                  child: Text('Logout'),
+                  child: Text('Edit Profile'),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    padding: EdgeInsets.all(16.0),
+                    children: [
+                      _buildStatCard('Task Completed', '0', Icons.task_alt),
+                      _buildStatCard('Calories Burned', '0 kcal', Icons.local_fire_department),
+                      _buildStatCard('Today Performance', '0%', Icons.show_chart),
+                      _buildStatCard('Calories Intake', '0 kcal', Icons.restaurant),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _logout(context);
+                    },
+                    child: Text('Logout'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

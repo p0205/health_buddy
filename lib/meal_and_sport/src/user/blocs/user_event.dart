@@ -5,14 +5,16 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoginSubmitted extends UserEvent {
+class LoginSuccessEvent extends UserEvent {
+  final int userId;
+  final String name;
   final String email;
-  final String password;
+  final String token;
 
-  LoginSubmitted({required this.email, required this.password});
+  LoginSuccessEvent({required this.userId, required this.name, required this.email,required this.token});
 
   @override
-  List<Object> get props => [email, password];
+  List<Object> get props => [userId];
 }
 
 class LoginReset extends UserEvent {}

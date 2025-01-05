@@ -67,17 +67,16 @@ class MealAndSportApp extends StatelessWidget {
           ),
           BlocProvider<CaloriesCounterMainBloc>(
             create: (context) =>
-                CaloriesCounterMainBloc(userId: userId,date: date),
+                CaloriesCounterMainBloc(),
           ),
           BlocProvider<SportMainBloc>(
             create: (context) =>
-                SportMainBloc(userId: userId,date: date),
+                SportMainBloc(),
           ),
           BlocProvider<UserBloc>(
             create: (context) =>
                 UserBloc(),
           ),
-
         ],
         child:
       const MaterialApp(
@@ -101,12 +100,12 @@ class _CaloriesCounterState extends State<CaloriesCounter> {
   Widget build(BuildContext context) {
     return BlocListener<CaloriesCounterMainBloc,CaloriesCounterMainState>(
       listener: (context, state) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  const CaloriesCounterMainScreen(),settings: const RouteSettings(name: "/mealMain")),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) =>
+        //           CaloriesCounterMainScreen(bl),
+        // );
       },
       listenWhen: (context,state){
         return (state.status == CaloriesCounterMainStatus.mealListLoaded);
@@ -129,14 +128,14 @@ class _CaloriesCounterState extends State<CaloriesCounter> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          final model = context.read<SportMainBloc>();
-                          model.add(LoadUserSportList());
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SportMainPage(),settings: const RouteSettings(name: "/sportMain"),
-                            ),
-                          );
+                          // final model = context.read<SportMainBloc>();
+                          // model.add(LoadUserSportList());
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => const SportMainPage(),settings: const RouteSettings(name: "/sportMain"),
+                          //   ),
+                          // );
                         },
                         child: const Text("Load Sport Page Data"),
                       ),
