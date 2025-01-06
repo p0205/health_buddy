@@ -86,8 +86,8 @@ class MainMenuScreen extends StatelessWidget {
     final email = bloc.state.email;
     final id = bloc.state.userId;
 
-    final caloriesBurnt = context.read<SportMainBloc>().state.sportSummary?.totalCalsBurnt;
-    final caloriesIntake = context.read<CaloriesCounterMainBloc>().state.summary?.caloriesIntake;
+    final caloriesBurnt = context.read<SportMainBloc>().state.sportSummary?.totalCalsBurnt.toStringAsFixed(2).trim();
+    final caloriesIntake = context.read<CaloriesCounterMainBloc>().state.summary?.caloriesIntake.toStringAsFixed(2).trim();
     return Scaffold(
       appBar: AppBar(
         title: Text('Health Buddy',
