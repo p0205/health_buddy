@@ -90,7 +90,9 @@ class MainMenuScreen extends StatelessWidget {
     final caloriesIntake = context.read<CaloriesCounterMainBloc>().state.summary?.caloriesIntake;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Health Buddy'),
+        title: Text('Health Buddy',
+        ),
+        backgroundColor: Colors.blue,
       ),
       drawer: SideBar(userId: id!, userEmail: email!,userName: name!),
       body: SafeArea(
@@ -106,12 +108,22 @@ class MainMenuScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+
               Padding(
-                padding: const EdgeInsets.only(top: 100.0, bottom: 16.0), // Adjusted top padding
-                child: CircleAvatar(
-                  radius: 100.0,
-                  backgroundImage: AssetImage('assets/images/LOGO.png'),
+                padding: const EdgeInsets.only(top: 50.0, bottom: 16.0), // Adjusted top padding
+                child: Text(
+                    "My Dashboard",
+                    style:  TextStyle(
+                      fontFamily: 'Itim',
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center
                 ),
+              ),
+              CircleAvatar(
+                radius: 100.0,
+                backgroundImage: AssetImage('assets/images/LOGO.png'),
               ),
               ElevatedButton(
                 onPressed: () {
