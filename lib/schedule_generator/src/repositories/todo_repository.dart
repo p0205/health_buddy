@@ -57,7 +57,7 @@ class TodoRepository{
 
       // Fetch Todos by sending a POST request with body
       final userResponse = await http.post(
-        Uri.parse('http://192.168.0.14:5000/api/v1/schedule'), //change api url - ip address needed if using physical device
+        Uri.parse('http://10.0.2.2:5000/api/v1/schedule'), //change api url - ip address needed if using physical device
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"

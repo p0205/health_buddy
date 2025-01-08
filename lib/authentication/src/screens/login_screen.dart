@@ -150,6 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _checkAllBlocsLoaded(BuildContext context) {
     if (_isSportBlocLoaded && _isCaloriesBlocLoaded) {
+      print("HIHHIHIHIHIHI");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -183,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
               _checkAllBlocsLoaded(context);
           },
           listenWhen: (context, state) {
-            return (state.status == SportMainStatus.sportListLoaded);
+            return (state.status == SportMainStatus.sportListLoaded || state.status == SportMainStatus.noRecordFound);
           },
         ),
         BlocListener<CaloriesCounterMainBloc, CaloriesCounterMainState>(
