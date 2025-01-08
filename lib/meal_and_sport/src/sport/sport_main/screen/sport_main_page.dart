@@ -27,8 +27,8 @@ class _SportMainPageState extends State<SportMainPage> {
     final email = userBloc.state.email;
         return Scaffold(
             appBar: AppBar(
-              title: const Text("Sport Summary",textAlign: TextAlign.center,),
-              backgroundColor: Colors.blueAccent,
+              title: const Text("Calories Burned",textAlign: TextAlign.center,),
+              backgroundColor: Colors.blue,
               titleTextStyle: const TextStyle(
                   fontFamily: 'Itim',
                   fontSize: 25,

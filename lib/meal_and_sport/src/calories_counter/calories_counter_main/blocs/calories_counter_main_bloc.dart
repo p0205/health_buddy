@@ -46,13 +46,11 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
       LoadInitialDataEvent event,
       Emitter<CaloriesCounterMainState> emit
   )async{
-    print("INIT TT");
     emit(state.copyWith(status: CaloriesCounterMainStatus.loading, mealList: {}));
     final mealList = await mealRepository.getUserMealListByDate(state.userId!, state.date!);
     final nutritionalSummary = await mealRepository.getNutritionalSummary(state.userId!, state.date!);
     emit(state.copyWith(status: CaloriesCounterMainStatus.mealListLoaded, mealList: mealList, summary: nutritionalSummary));
-    print("MEAL STATE");
-    print(state.status);
+    emit(state.copyWith(status: CaloriesCounterMainStatus.initial));
   }
 
   Future<void> _reload(
@@ -63,6 +61,7 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
     final mealList = await mealRepository.getUserMealListByDate(state.userId!, state.date!);
     final nutritionalSummary = await mealRepository.getNutritionalSummary(state.userId!, state.date!);
     emit(state.copyWith(status: CaloriesCounterMainStatus.mealListReloaded, mealList: mealList, summary: nutritionalSummary));
+    emit(state.copyWith(status: CaloriesCounterMainStatus.initial));
   }
 
   Future<void> _delete(

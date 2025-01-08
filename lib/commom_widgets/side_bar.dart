@@ -8,6 +8,7 @@ import '../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calor
 import '../meal_and_sport/src/calories_counter/calories_counter_main/screen/calories_counter_main.dart';
 import '../meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import '../meal_and_sport/src/user/blocs/user_bloc.dart';
+import '../schedule_generator/src/ui/schedule_module/pages/schedule_page.dart';
 
 class SideBar extends StatelessWidget {
   final int userId;
@@ -39,20 +40,57 @@ class SideBar extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
-              onTap: () {
+              onTap: () async {
+                final bloc = context.read<CaloriesCounterMainBloc>();
+                final sportBloc = context.read<SportMainBloc>();
+
+                // Trigger loading events
+                bloc.add(DateChangedEvent(date: DateTime.now()));
+                bloc.add(ReloadMealList());
+                sportBloc.add(SportDateChangedEvent(date: DateTime.now()));
+                sportBloc.add(LoadUserSportList());
+
+                // Show a loading indicator
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+
+                // Wait for the data to be loaded based on the state property
+                await Future.wait([
+                  bloc.stream.firstWhere((state) => state.status == CaloriesCounterMainStatus.mealListLoaded),
+                  sportBloc.stream.firstWhere((state) => state.status == SportMainStatus.sportListLoaded),
+                ]);
+
+                // Dismiss the loading dialog
+                Navigator.of(context, rootNavigator: true).pop();
+
+                // Proceed to navigation
                 final token = context.read<UserBloc>().state.token;
                 Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MainMenuScreen(token: token!),
-                    ));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MainMenuScreen(token: token!),
+                  ),
+                );
               },
             ),
+
             ListTile(
               leading: const Icon(Icons.calendar_today),
               title: const Text('Schedule'),
               onTap: () {
                 Navigator.pop(context);
+                final userId = context.read<UserBloc>().state.userId.toString();
+                Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                builder: (context) => SchedulePage(user_id: userId),
+                ),
+                );
               },
             ),
             ListTile(

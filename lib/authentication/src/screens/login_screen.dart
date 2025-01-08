@@ -26,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  late String token;
   bool _isLoading = false;
   bool _rememberMe = false;
   bool _isSportBlocLoaded = false;
@@ -69,8 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          final token = data['token'];
-          final userId = data['userId'];
+           token = data['token'];
+          final userId = data['id'];
           final email = data['email'];
           final name = data['name'];
 
@@ -149,6 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _checkAllBlocsLoaded(BuildContext context) {
     if (_isSportBlocLoaded && _isCaloriesBlocLoaded) {
+      print("HIHHIHIHIHIHI");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -162,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
             child: MainMenuScreen(
-              token: 'YourTokenHere', // Replace with the actual token
+              token: token, // Replace with the actual token
             ),
           ),
         ),
@@ -182,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
               _checkAllBlocsLoaded(context);
           },
           listenWhen: (context, state) {
-            return (state.status == SportMainStatus.sportListLoaded);
+            return (state.status == SportMainStatus.sportListLoaded || state.status == SportMainStatus.noRecordFound);
           },
         ),
         BlocListener<CaloriesCounterMainBloc, CaloriesCounterMainState>(
