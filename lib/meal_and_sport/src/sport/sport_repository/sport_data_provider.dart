@@ -41,9 +41,9 @@ class SportDataProvider{
   // static String _getBaseUrl() {
   //   return "192.168.1.3:8080";
   // // }
-  static String _getBaseUrl() {
-    return "10.0.2.2:8080";
-  }
+  // static String _getBaseUrl() {
+  //   return "10.0.2.2:8080";
+  // }
 
   // api : GET localhost:8080/sport/search
   Future<List<Sport>> getMatchingSportList(String query) async {

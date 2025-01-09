@@ -4,9 +4,11 @@ import 'package:http/http.dart' as http;
 
 import '../../../commom_widgets/side_bar.dart';
 import '../../../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
+import '../../../meal_and_sport/src/calories_counter/calories_counter_main/screen/calories_counter_main.dart';
 import '../../../meal_and_sport/src/calories_counter/search_meal/blocs/search_meal_bloc.dart';
 import '../../../meal_and_sport/src/sport/search_sport/bloc/search_sport_bloc.dart';
 import '../../../meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
+import '../../../meal_and_sport/src/sport/sport_main/screen/sport_main_page.dart';
 import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
 import 'login_screen.dart';
 
