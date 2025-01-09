@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
             child: MainMenuScreen(
-              token: 'YourTokenHere', // Replace with the actual token
+              token: token, // Replace with the actual token
             ),
           ),
         ),
@@ -183,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
               _checkAllBlocsLoaded(context);
           },
           listenWhen: (context, state) {
-            return (state.status == SportMainStatus.sportListLoaded);
+            return (state.status == SportMainStatus.sportListLoaded || state.status == SportMainStatus.noRecordFound);
           },
         ),
         BlocListener<CaloriesCounterMainBloc, CaloriesCounterMainState>(
