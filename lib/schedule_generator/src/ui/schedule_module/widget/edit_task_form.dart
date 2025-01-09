@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../controller/todo_controller.dart';
 import '../../../models/todo_task.dart';
+import '../../../models/user.dart';
 
 class EditTaskForm extends StatefulWidget {
+  final User user;
   final TodoTask todoTask;
+  final DateTime date;
 
   const EditTaskForm({
     super.key,
+    required this.user,
     required this.todoTask,
+    required this.date
   });
 
   @override
@@ -97,13 +104,13 @@ class _EditTaskFormState extends State<EditTaskForm> {
         id: widget.todoTask.id,
         title: _titleController.text,
         description: _descriptionController.text,
-        startTime: startTime.format(context),
-        endTime: endTime.format(context),
+        startTime: startTime.format(context).replaceAll(':', ''),
+        endTime: endTime.format(context).replaceAll(':', ''),
         isComplete: widget.todoTask.isComplete,
         type: widget.todoTask.type,
       );
 
-      // Provider.of<TodoController>(context, listen: false).updateTask(updatedTask);
+      Provider.of<TodoController>(context, listen: false).updateTodoTask(updatedTask, this.widget.date, this.widget.user);
       Navigator.pop(context);
     }
   }
@@ -122,10 +129,10 @@ class _EditTaskFormState extends State<EditTaskForm> {
             ),
             TextButton(
               onPressed: () {
-                // Provider.of<TodoController>(context, listen: false)
-                //    .deleteTask(widget.todoTask);
-                Navigator.pop(context); // Close confirmation dialog
+                Provider.of<TodoController>(context, listen: false)
+                    .deleteTodoTask(widget.user.id.toString(), widget.todoTask.id.toString(), widget.date);
                 Navigator.pop(context); // Close edit form
+                Navigator.pop(context); // Close delete confirmation dialog
               },
               child: const Text('Delete', style: TextStyle(color: Colors.red)),
             ),
@@ -138,17 +145,19 @@ class _EditTaskFormState extends State<EditTaskForm> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 36.0),
+                    child:TextFormField(
                       controller: _titleController,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -173,95 +182,96 @@ class _EditTaskFormState extends State<EditTaskForm> {
                       },
                       onEditingComplete: () => FocusScope.of(context).unfocus(),
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text('Time:'),
-                        const SizedBox(width: 4),
-                        TextButton.icon(
-                          onPressed: () => _selectTime(context, true),
-                          icon: const Icon(Icons.access_time),
-                          label: Text(startTime.format(context)),
-                        ),
-                        const Text(' - '),
-                        TextButton.icon(
-                          onPressed: () => _selectTime(context, false),
-                          icon: const Icon(Icons.access_time),
-                          label: Text(endTime.format(context)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Description: ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.normal,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text('Time:'),
+                      const SizedBox(width: 4),
+                      TextButton.icon(
+                        onPressed: () => _selectTime(context, true),
+                        icon: const Icon(Icons.access_time),
+                        label: Text(startTime.format(context)),
                       ),
+                      const Text(' - '),
+                      TextButton.icon(
+                        onPressed: () => _selectTime(context, false),
+                        icon: const Icon(Icons.access_time),
+                        label: Text(endTime.format(context)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Description: ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
                     ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _descriptionController,
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 2.0,
-                          ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _descriptionController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
                         ),
                       ),
-                      onEditingComplete: () => FocusScope.of(context).unfocus(),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: _showDeleteConfirmation,
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          label: const Text('Delete'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red.withOpacity(0.1),
-                            foregroundColor: Colors.red,
-                          ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
                         ),
-                        ElevatedButton(
-                          onPressed: _saveChanges,
-                          child: const Text('Save'),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 2.0,
                         ),
-                      ],
+                      ),
                     ),
-                  ],
-                ),
+                    onEditingComplete: () => FocusScope.of(context).unfocus(),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: _showDeleteConfirmation,
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        label: const Text('Delete'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.withOpacity(0.1),
+                          foregroundColor: Colors.red,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _saveChanges,
+                        child: const Text('Save'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            Positioned(
-              right: 8,
-              top: 8,
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
+          ),
+          Positioned(
+            right: 8,
+            top: 8,
+            child: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 }

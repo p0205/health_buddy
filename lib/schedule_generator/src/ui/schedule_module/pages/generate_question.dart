@@ -73,7 +73,6 @@ class _GenerateQuestionPageState extends State<GenerateQuestionPage> {
         // Add a small delay to ensure DB operations are complete
         await Future.delayed(Duration(milliseconds: 10000));
 
-
         Navigator.push(
           context,
           MaterialPageRoute(
