@@ -70,8 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          final token = data['token'];
-          final userId = data['userId'];
+           token = data['token'];
+          final userId = data['id'];
           final email = data['email'];
           final name = data['name'];
 
