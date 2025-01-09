@@ -26,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  late String token;
   bool _isLoading = false;
   bool _rememberMe = false;
   bool _isSportBlocLoaded = false;

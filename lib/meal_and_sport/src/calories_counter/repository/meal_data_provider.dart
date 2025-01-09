@@ -42,11 +42,11 @@ class MealApiProvider{
 
   // // physical Android devices
   // static String _getBaseUrl() {
-  //   return "192.168.1.3:8080";
+  //   return "10.131.76.45:8080";
   // }
   //
   // static String _getBaseUrl() {
-  //   return "192.168.173.30:8080";
+  //   return "192.168.18.30:8080";
   // }
 
   // api : localhost:8080/meal/search

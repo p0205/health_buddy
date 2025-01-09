@@ -8,6 +8,7 @@ import '../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calor
 import '../meal_and_sport/src/calories_counter/calories_counter_main/screen/calories_counter_main.dart';
 import '../meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import '../meal_and_sport/src/user/blocs/user_bloc.dart';
+import '../schedule_generator/src/ui/schedule_module/pages/schedule_page.dart';
 
 class SideBar extends StatelessWidget {
   final int userId;
