@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -60,5 +61,34 @@ class UserDataProvider {
       throw GetUserWeightFailure();
     }
     return response.body;
+  }
+
+
+  Future<void> markFirstLogin(int userId, bool isFirstLogin) async {
+
+    final uri = Uri.http(_baseUrl,"/user/${userId.toString()}/first-login");
+
+    // The request payload
+    final payload = jsonEncode({'isFirstLogin': isFirstLogin});
+
+    try {
+      // Send the PATCH request
+      final response = await http.patch(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: payload,
+      );
+
+      if (response.statusCode == 204) {
+        // Successfully updated the first login status
+        print('First login status updated successfully');
+      } else {
+        // Handle other status codes
+        print('Failed to update first login status. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle any error
+      print('Error updating first login status: $error');
+    }
   }
 }

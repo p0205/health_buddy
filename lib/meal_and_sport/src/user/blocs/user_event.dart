@@ -10,8 +10,9 @@ class LoginSuccessEvent extends UserEvent {
   final String name;
   final String email;
   final String token;
+  final bool isFirstLogin;
 
-  LoginSuccessEvent({required this.userId, required this.name, required this.email,required this.token});
+  LoginSuccessEvent({required this.userId, required this.name, required this.email,required this.token,required this.isFirstLogin});
 
   @override
   List<Object> get props => [userId];

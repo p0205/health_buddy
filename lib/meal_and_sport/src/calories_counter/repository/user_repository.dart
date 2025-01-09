@@ -14,4 +14,7 @@ class UserRepository{
   Future<String> getUserWeight(int id)async{
     return await userDataProvider.getUserWeight(id);
   }
+  Future<void> markFirstLogin(int userId, bool isFirstLogin) async{
+    return await userDataProvider.markFirstLogin(userId, isFirstLogin);
+  }
 }

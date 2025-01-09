@@ -9,8 +9,10 @@ import 'second_register_page.dart';
 import '../widgets/popupDialogDefault.dart';
 
 class FirstRegisterPage extends StatefulWidget {
+  const FirstRegisterPage({super.key});
+
   @override
-  _FirstRegisterPageState createState() => _FirstRegisterPageState();
+  State<FirstRegisterPage> createState() => _FirstRegisterPageState();
 }
 
 class _FirstRegisterPageState extends State<FirstRegisterPage> {
@@ -49,7 +51,7 @@ class _FirstRegisterPageState extends State<FirstRegisterPage> {
           body: jsonEncode({'email': email}),
         );
 
-        if (response.statusCode == 201) {
+        if (response.statusCode == 200) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -112,10 +114,11 @@ class _FirstRegisterPageState extends State<FirstRegisterPage> {
                       return 'Please enter your password';
                     } else if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$')
                         .hasMatch(value)) {
-                      return 'Password must be 8-12 characters, including at least one uppercase letter, one lowercase letter, one numeral, and one symbol';
+                      return 'Password must be 8-12 characters,\nincluding at least one uppercase letter,\none lowercase letter, one numeral, and one symbol.';
                     }
                     return null;
                   },
+
                 ),
                 SizedBox(height: 16.0),
                 PasswordTextFormField(
@@ -140,6 +143,7 @@ class _FirstRegisterPageState extends State<FirstRegisterPage> {
               ],
             ),
           ),
+
         ),
       ),
     );

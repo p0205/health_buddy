@@ -27,23 +27,23 @@ class SportDataProvider{
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
 
-  //emulator
-  // static String _getBaseUrl() {
-  //   if (Platform.isAndroid) {
-  //     return "10.0.2.2:8080"; // Android emulator localhost
-  //
-  //   } else {
-  //     return "localhost:8080";
-  //   }
-  // }
+  // emulator
+  static String _getBaseUrl() {
+    if (Platform.isAndroid) {
+      return "10.0.2.2:8080"; // Android emulator localhost
+
+    } else {
+      return "localhost:8080";
+    }
+  }
 
   // //physical device
   // static String _getBaseUrl() {
   //   return "192.168.1.3:8080";
   // // }
-  static String _getBaseUrl() {
-    return "10.0.2.2:8080";
-  }
+  // static String _getBaseUrl() {
+  //   return "10.0.2.2:8080";
+  // }
 
   // api : GET localhost:8080/sport/search
   Future<List<Sport>> getMatchingSportList(String query) async {

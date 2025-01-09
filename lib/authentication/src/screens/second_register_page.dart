@@ -63,7 +63,7 @@ class _SecondRegisterPageState extends State<SecondRegisterPage> {
               OTPPage(email: widget.email,
                   name: _nameController.text,
                   password: widget.password,
-                  gender: _selectedGender,
+                  gender: _selectedGender == "Female" ? 'F' : 'M',
                   age: age,
                   weight: weight,
                   height: height)),

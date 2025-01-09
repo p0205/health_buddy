@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/authentication/src/main.dart';
+import 'package:health_buddy/authentication/src/screens/main_menu_screen.dart';
 import 'package:health_buddy/meal_and_sport/src/main.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/search_sport/bloc/search_sport_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
+import 'package:health_buddy/newUserGuide/guiding/guiding_dashboard.dart';
 import 'package:health_buddy/schedule_generator/src/main.dart';
 
+
+import 'authentication/src/screens/splash_screen.dart';
 import 'meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
 import 'meal_and_sport/src/calories_counter/search_meal/blocs/search_meal_bloc.dart';
 import 'meal_and_sport/src/user/blocs/user_bloc.dart';
+import 'newUserGuide/greeting/greeting_bloc.dart';
 
 void main() {
   runApp(
@@ -18,6 +23,9 @@ void main() {
       providers: [
         BlocProvider<SearchFoodBloc>(
           create: (context) => SearchFoodBloc(),
+        ),
+        BlocProvider(
+          create: (context) => GreetingBloc(),
         ),
         BlocProvider<UserBloc>(
           create: (context) => UserBloc(),
@@ -32,10 +40,24 @@ void main() {
         BlocProvider<SportMainBloc>(
           create: (context) => SportMainBloc(),
         ),
-      ], child: AuthApp() ,
-
+      ], child:MyApp() ,
       ),
       );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // Disable the debug banner
+      title: 'Health Buddy',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: SplashScreen(),
+    );
+  }
 }
 //
 // class MyApp extends StatelessWidget {
@@ -65,7 +87,7 @@ void main() {
 //         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
 //         useMaterial3: true,
 //       ),
-//       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+//       home: GuidingDashboard(username: "Ali",)
 //     );
 //   }
 // }
