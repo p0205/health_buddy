@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/todo.dart';
 import '../models/todo_task.dart';
 import '../models/user.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 class TodoRepository{
 
@@ -18,7 +19,7 @@ class TodoRepository{
 
       // Fetch Todos by sending a POST request with body
       final todoResponse = await http.get(
-        Uri.parse('http://10.0.2.2:5000/api/v1/todos/'+userId+"/"+formattedDate), //change api url - ip address needed if using physical device
+        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/todos/'+userId+"/"+formattedDate), //change api url - ip address needed if using physical device
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
@@ -57,7 +58,7 @@ class TodoRepository{
 
       // Fetch Todos by sending a POST request with body
       final userResponse = await http.post(
-        Uri.parse('http://10.0.2.2:5000/api/v1/schedule'), //change api url - ip address needed if using physical device
+        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/schedule'), //change api url - ip address needed if using physical device
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"

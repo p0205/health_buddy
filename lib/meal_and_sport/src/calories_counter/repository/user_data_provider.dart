@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-
+import 'package:health_buddy/constants.dart' as Constants;
 
 
 class GetUserWeightFailure implements Exception{}
@@ -20,7 +20,7 @@ class UserDataProvider {
 
   static String _getBaseUrl() {
     if (Platform.isAndroid) {
-      return "10.0.2.2:8080"; // Android emulator localhost
+      return Constants.BaseUrl + Constants.SportNMealPort; // Android emulator localhost
     } else{
       return "localhost:8080"; // Default for other platforms
     }

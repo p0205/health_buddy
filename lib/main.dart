@@ -7,6 +7,7 @@ import 'package:health_buddy/meal_and_sport/src/sport/search_sport/bloc/search_s
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import 'package:health_buddy/newUserGuide/guiding/guiding_dashboard.dart';
 import 'package:health_buddy/schedule_generator/src/main.dart';
+import 'package:provider/provider.dart';
 
 
 import 'authentication/src/screens/splash_screen.dart';
@@ -15,31 +16,75 @@ import 'meal_and_sport/src/calories_counter/search_meal/blocs/search_meal_bloc.d
 import 'meal_and_sport/src/user/blocs/user_bloc.dart';
 import 'newUserGuide/greeting/greeting_bloc.dart';
 
+import 'package:health_buddy/schedule_generator/src/controller/todo_controller.dart';
+import 'package:health_buddy/schedule_generator/src/controller/user_controller.dart';
+import 'package:health_buddy/schedule_generator/src/repositories/todo_repository.dart';
+import 'package:health_buddy/schedule_generator/src/repositories/user_repository.dart';
+import 'package:health_buddy/schedule_generator/src/ui/schedule_module/pages/schedule_page.dart';
+
 void main() {
   runApp(
 
-    MultiBlocProvider(
-
-      providers: [
-        BlocProvider<SearchFoodBloc>(
-          create: (context) => SearchFoodBloc(),
-        ),
-        BlocProvider(
-          create: (context) => GreetingBloc(),
-        ),
-        BlocProvider<UserBloc>(
-          create: (context) => UserBloc(),
-        ),
-        BlocProvider<SearchSportBloc>(
-          create: (context) => SearchSportBloc(),
-        ),
-
-        BlocProvider<CaloriesCounterMainBloc>(
-          create: (context) => CaloriesCounterMainBloc(),
-        ),
-        BlocProvider<SportMainBloc>(
-          create: (context) => SportMainBloc(),
-        ),
+    // MultiBlocProvider(
+    //
+    //   providers: [
+    //     BlocProvider<SearchFoodBloc>(
+    //       create: (context) => SearchFoodBloc(),
+    //     ),
+    //     BlocProvider(
+    //       create: (context) => GreetingBloc(),
+    //     ),
+    //     BlocProvider<UserBloc>(
+    //       create: (context) => UserBloc(),
+    //     ),
+    //     BlocProvider<SearchSportBloc>(
+    //       create: (context) => SearchSportBloc(),
+    //     ),
+    //
+    //     BlocProvider<CaloriesCounterMainBloc>(
+    //       create: (context) => CaloriesCounterMainBloc(),
+    //     ),
+    //     BlocProvider<SportMainBloc>(
+    //       create: (context) => SportMainBloc(),
+    //     ),
+    MultiProvider(
+        providers: [
+          // Bloc Providers
+          BlocProvider<SearchFoodBloc>(
+            create: (context) => SearchFoodBloc(),
+          ),
+          BlocProvider(
+            create: (context) => GreetingBloc(),
+          ),
+          BlocProvider<UserBloc>(
+            create: (context) => UserBloc(),
+          ),
+          BlocProvider<SearchSportBloc>(
+            create: (context) => SearchSportBloc(),
+          ),
+          BlocProvider<CaloriesCounterMainBloc>(
+            create: (context) => CaloriesCounterMainBloc(),
+          ),
+          BlocProvider<SportMainBloc>(
+            create: (context) => SportMainBloc(),
+          ),
+          // Other Providers
+          Provider(
+            create: (context) => TodoRepository(),
+          ),
+          Provider(
+            create: (context) => UserRepository(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => TodoController(
+              context.read<TodoRepository>(),
+            ),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => UserController(
+              context.read<UserRepository>(),
+            ),
+          ),
       ], child:MyApp() ,
       ),
       );

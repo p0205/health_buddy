@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import '../models/meal.dart';
 import '../models/meal_summary.dart';
 import '../models/user_meal.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 //Exception throw when foodSearch fails
 class GetMatchingFoodListFailure implements Exception{}
@@ -33,7 +34,7 @@ class MealApiProvider{
 
   static String _getBaseUrl() {
     if (Platform.isAndroid) {
-      return "10.0.2.2:8080"; // Android emulator localhost
+      return Constants.BaseUrl + Constants.SportNMealPort; // Android emulator localhost
 
     } else {
       return "localhost:8080";

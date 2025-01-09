@@ -17,6 +17,7 @@ import '../../../meal_and_sport/src/sport/sport_main/screen/sport_main_page.dart
 import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
 import '../../../newUserGuide/greeting/greeting_bloc.dart';
 import 'login_screen.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 // Reusable Popup Dialog Function
 void showPopupDialog(BuildContext context, String message, {VoidCallback? onOkPressed}) {
@@ -49,7 +50,7 @@ class MainMenuScreen extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     try {
-      final url = Uri.parse('http://10.0.2.2:8000/api/logout'); // Replace with your backend logout URL
+      final url = Uri.parse(Constants.BaseUrl + Constants.AunthenticationPort + '/logout'); // Replace with your backend logout URL
 
       final response = await http.post(
         url,

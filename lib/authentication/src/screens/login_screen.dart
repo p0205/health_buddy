@@ -16,6 +16,7 @@ import 'first_register_page.dart';
 import 'main_menu_screen.dart';
 import '../widgets/loadingDefault.dart';
 import '../widgets/popupDialogDefault.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -72,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/api/login'),
+          Uri.parse(Constants.BaseUrl + Constants.AunthenticationPort + '/login'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'email': email, 'password': password}),
         );
@@ -84,11 +85,9 @@ class _LoginScreenState extends State<LoginScreen> {
           final email = data['email'];
           final name = data['name'];
           final isFirstLogin = data['isFirstLogin'];
-          print("IsFirstLogin");
-          print(isFirstLogin);
           // Guard context usage with mounted check
           if (mounted) {
-
+            print("Login successful");
             final userBloc = context.read<UserBloc>(); // Safe to use context here
             userBloc.add(LoginSuccessEvent(userId: userId, email: email, name: name,token:token, isFirstLogin:isFirstLogin));
 
@@ -107,23 +106,23 @@ class _LoginScreenState extends State<LoginScreen> {
               await prefs.remove('password');
             }
 
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) =>
-            //     MultiBlocProvider(
-            //       providers: [
-            //         BlocProvider<SportMainBloc>.value(
-            //           value: context.read<SportMainBloc>(),
-            //         ),
-            //         BlocProvider<CaloriesCounterMainBloc>.value(
-            //           value: context.read<CaloriesCounterMainBloc>(),
-            //         ),
-            //       ],
-            //       child: MainMenuScreen(token: token),
-            //       ),
-            //     )
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                MultiBlocProvider(
+                  providers: [
+                    BlocProvider<SportMainBloc>.value(
+                      value: context.read<SportMainBloc>(),
+                    ),
+                    BlocProvider<CaloriesCounterMainBloc>.value(
+                      value: context.read<CaloriesCounterMainBloc>(),
+                    ),
+                  ],
+                  child: MainMenuScreen(token: token),
+                  ),
+                )
+            );
           }
         } else {
           final error = jsonDecode(response.body)['message'];

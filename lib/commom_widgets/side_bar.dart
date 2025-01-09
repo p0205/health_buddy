@@ -88,7 +88,7 @@ class SideBar extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 final userId = context.read<UserBloc>().state.userId.toString();
-                Navigator.pushReplacement(
+                Navigator.push(
                 context,
                 MaterialPageRoute(
                 builder: (context) => SchedulePage(user_id: userId),

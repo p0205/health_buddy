@@ -4,8 +4,7 @@ import 'login_screen.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-
+import 'package:health_buddy/constants.dart' as Constants;
 
 class OTPPage extends StatefulWidget {
 
@@ -70,7 +69,7 @@ class _OTPPageState extends State<OTPPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/register'),
+        Uri.parse(Constants.BaseUrl + Constants.AunthenticationPort + '/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': widget.name,
@@ -135,7 +134,7 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   Future<void> sendOtp(String email) async {
-    final url = 'http://10.0.2.2:8000/api/send-otp'; // Change to your Laravel backend URL
+    final url = Constants.BaseUrl + Constants.AunthenticationPort + '/send-otp'; // Change to your Laravel backend URL
 
     try {
       final response = await http.post(
@@ -155,7 +154,7 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   Future<void> verifyOtp(String otp, String email) async {
-    final url = 'http://10.0.2.2:8000/api/verify-otp'; // Change to your Laravel backend URL
+    final url = Constants.BaseUrl + Constants.AunthenticationPort + '/verify-otp'; // Change to your Laravel backend URL
 
     try {
       final response = await http.post(

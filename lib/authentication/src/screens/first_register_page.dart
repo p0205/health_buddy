@@ -7,6 +7,7 @@ import '../widgets/textFieldDefault.dart';
 import '../widgets/textFieldPassword.dart';
 import 'second_register_page.dart';
 import '../widgets/popupDialogDefault.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 class FirstRegisterPage extends StatefulWidget {
   const FirstRegisterPage({super.key});
@@ -46,7 +47,7 @@ class _FirstRegisterPageState extends State<FirstRegisterPage> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/api/check-email'),
+          Uri.parse(Constants.BaseUrl + Constants.AunthenticationPort + '/check-email'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'email': email}),
         );

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../sport_models/sport.dart';
 import '../sport_models/sport_summary.dart';
 import '../sport_models/user_sport.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 //Exception throw when foodSearch fails
 class SearchMatchingSportListFailure implements Exception{}
@@ -30,7 +31,7 @@ class SportDataProvider{
   // emulator
   static String _getBaseUrl() {
     if (Platform.isAndroid) {
-      return "10.0.2.2:8080"; // Android emulator localhost
+      return Constants.BaseUrl + Constants.SportNMealPort; // Android emulator localhost
 
     } else {
       return "localhost:8080";
