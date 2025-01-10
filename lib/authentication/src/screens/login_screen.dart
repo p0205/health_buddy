@@ -105,24 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
               await prefs.remove('email');
               await prefs.remove('password');
             }
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider<SportMainBloc>.value(
-                      value: context.read<SportMainBloc>(),
-                    ),
-                    BlocProvider<CaloriesCounterMainBloc>.value(
-                      value: context.read<CaloriesCounterMainBloc>(),
-                    ),
-                  ],
-                  child: MainMenuScreen(token: token),
-                  ),
-                )
-            );
+            //use listener to navigate to main screen only after data loaded
           }
         } else {
           final error = jsonDecode(response.body)['message'];
@@ -182,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
                 child: MainMenuScreen(
-                  token: token, // Replace with the actual token
+                  token: token,
                 ),
               ),
             ),
