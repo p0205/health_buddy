@@ -49,7 +49,10 @@ class SideBar extends StatelessWidget {
                 bloc.add(ReloadMealList());
                 sportBloc.add(SportDateChangedEvent(date: DateTime.now()));
                 sportBloc.add(LoadUserSportList());
-
+                print("Sport State");
+                print(sportBloc.state.status);
+                print("Meal State");
+                print(bloc.state.status);
                 // Show a loading indicator
                 showDialog(
                   context: context,
@@ -62,7 +65,7 @@ class SideBar extends StatelessWidget {
                 // Wait for the data to be loaded based on the state property
                 await Future.wait([
                   bloc.stream.firstWhere((state) => state.status == CaloriesCounterMainStatus.mealListLoaded),
-                  sportBloc.stream.firstWhere((state) => state.status == SportMainStatus.sportListLoaded),
+                  sportBloc.stream.firstWhere((state) => state.status == SportMainStatus.sportListLoaded ||state.status == SportMainStatus.noRecordFound  ),
                 ]);
 
                 // Dismiss the loading dialog
@@ -85,7 +88,7 @@ class SideBar extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 final userId = context.read<UserBloc>().state.userId.toString();
-                Navigator.pushReplacement(
+                Navigator.push(
                 context,
                 MaterialPageRoute(
                 builder: (context) => SchedulePage(user_id: userId),

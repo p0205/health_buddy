@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/user.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 class UserRepository {
   User? user;
@@ -15,7 +16,9 @@ class UserRepository {
 
       // Fetch user by sending a GET request
       final userResponse = await http.get(
-        Uri.parse('http://10.131.76.175:5000/api/v1/user/'+userId), //change api url - ip address needed if using physical device
+
+        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/user/'+userId), //change api url - ip address needed if using physical device
+
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"

@@ -4,9 +4,11 @@ import 'package:health_buddy/meal_and_sport/src/sport/search_sport/bloc/search_s
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/screen/sport_main_page.dart';
 import 'package:health_buddy/meal_and_sport/src/user/blocs/user_bloc.dart';
+import 'package:provider/provider.dart';
 import 'calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
 import 'calories_counter/calories_counter_main/screen/calories_counter_main.dart';
 import 'calories_counter/search_meal/blocs/search_meal_bloc.dart';
+
 
 // void main() {
   // int userId = 1;
@@ -78,7 +80,7 @@ class MealAndSportApp extends StatelessWidget {
                 UserBloc(),
           ),
         ],
-        child:
+      child:
       const MaterialApp(
       home: CaloriesCounter( date: "2024-12-10"),
       ) );

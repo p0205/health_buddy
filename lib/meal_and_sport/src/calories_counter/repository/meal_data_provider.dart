@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import '../models/meal.dart';
 import '../models/meal_summary.dart';
 import '../models/user_meal.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 //Exception throw when foodSearch fails
 class GetMatchingFoodListFailure implements Exception{}
@@ -33,10 +34,10 @@ class MealApiProvider{
 
   static String _getBaseUrl() {
     if (Platform.isAndroid) {
-      return "10.0.2.2:8080"; // Android emulator localhost
+      return Constants.BaseUrl + Constants.SportNMealPort; // Android emulator localhost
 
     } else {
-      return "localhost:8080";
+      return "http://localhost:8080";
     }
   }
 
@@ -51,7 +52,8 @@ class MealApiProvider{
 
   // api : localhost:8080/meal/search
   Future<List<Meal>> getMatchingMealList(String query) async {
-    final uri = Uri.http(_baseUrl,"/meal/search",{'name':query});
+    final uri = Uri.parse('$_baseUrl/meal/search?name=$query');
+
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -64,7 +66,8 @@ class MealApiProvider{
   // api : GET localhost:8080/meal/{mealId}
   Future<Meal> getMeal(int id) async {
 
-    final uri = Uri.http(_baseUrl,"/meal/${id.toString()}");
+    final uri = Uri.parse('$_baseUrl/meal/${id.toString()}');
+
 
     final response = await _httpClient.get(uri);
 
@@ -78,7 +81,8 @@ class MealApiProvider{
   // api : POST localhost:8080/meal
   Future<void> addMeal(Meal meal)async{
 
-    final uri = Uri.http(_baseUrl,"/meal");
+    final uri = Uri.parse('$_baseUrl/meal');
+
 
     final response = await _httpClient.post(
         uri,
@@ -94,7 +98,7 @@ class MealApiProvider{
   Future<Map<String, List<UserMeal>>> getUserMealListByDate(int userId, DateTime date) async {
     String formatedDate = formatDate(date);
 
-    final uri = Uri.http(_baseUrl,"/meal/user",{"userId": userId.toString(), "date": formatedDate});
+    final uri = Uri.parse('$_baseUrl/meal/user?userId=${userId.toString()}&date=$formatedDate');
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -113,7 +117,7 @@ class MealApiProvider{
   Future<void> addUserMeal(UserMeal userMeal) async {
 
     // final uri = Uri.http(_baseUrl,"/meal/user",{"userId": userId.toString()});
-    final uri = Uri.http(_baseUrl,"/meal/user");
+    final uri = Uri.parse('$_baseUrl/meal/user');
     final response = await _httpClient.post(
         uri,
         headers: {"Content-Type": "application/json"},
@@ -128,8 +132,7 @@ class MealApiProvider{
 
   Future<MealSummary> getNutritionalSummary(int userId,DateTime date) async{
     String formatedDate = formatDate(date);
-
-    final uri = Uri.http(_baseUrl,"/meal/user/summary",{"userId": userId.toString(), "date": formatedDate});
+    final uri = Uri.parse('$_baseUrl/meal/user/summary?userId=${userId.toString()}&date=$formatedDate');
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -145,9 +148,9 @@ class MealApiProvider{
 
   // api : DELETE localhost:8080/meal/user/{userMealId}
   Future<void> deleteUserMeal(int userMealId) async {
-    final uri = Uri.http(_baseUrl,"/meal/user/delete/${userMealId.toString()}");
+    final uri = Uri.parse('$_baseUrl/meal/user/delete/${userMealId.toString()}');
     final response = await _httpClient.delete(uri);
-    if(response.statusCode != 204){
+    if (response.statusCode != 204) {
       throw DeleteUserMealFailure();
     }
   }
@@ -183,7 +186,8 @@ class MealApiProvider{
   //   }
   // }
   Future<Meal?> extractNutrition(File file) async{
-    final uri = Uri.http(_baseUrl,"/image/extract");
+    final uri = Uri.parse('$_baseUrl/image/extract');
+
     // var request = http.MultipartRequest("POST",uri);
     // request.files.add(await http.MultipartFile.fromPath("file",file.path));
     //

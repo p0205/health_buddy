@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/user/blocs/user_event.dart';
+import 'package:health_buddy/meal_and_sport/src/user/blocs/user_state.dart';
+import 'package:health_buddy/newUserGuide/guiding/guiding_dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
@@ -14,6 +16,7 @@ import 'first_register_page.dart';
 import 'main_menu_screen.dart';
 import '../widgets/loadingDefault.dart';
 import '../widgets/popupDialogDefault.dart';
+import 'package:health_buddy/constants.dart' as Constants;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   bool _isSportBlocLoaded = false;
   bool _isCaloriesBlocLoaded = false;
+  bool _isUserLoaded = false;
 
   @override
   void initState() {
@@ -42,12 +46,18 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('email');
     final password = prefs.getString('password');
+    final rememberMe = prefs.getBool('rememberMe') ?? false;
 
-    if (email != null && password != null) {
+    if (email != null && password != null && rememberMe) {
       setState(() {
         _emailController.text = email;
         _passwordController.text = password;
         _rememberMe = true;
+      });
+    }
+    else {
+      setState(() {
+        _rememberMe = false;
       });
     }
   }
@@ -63,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try {
         final response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/api/login'),
+          Uri.parse(Constants.BaseUrl + Constants.AunthenticationPort + '/login'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'email': email, 'password': password}),
         );
@@ -74,12 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
           final userId = data['id'];
           final email = data['email'];
           final name = data['name'];
-
+          final isFirstLogin = data['isFirstLogin'];
           // Guard context usage with mounted check
           if (mounted) {
-
+            print("Login successful");
             final userBloc = context.read<UserBloc>(); // Safe to use context here
-            userBloc.add(LoginSuccessEvent(userId: userId, email: email, name: name,token:token));
+            userBloc.add(LoginSuccessEvent(userId: userId, email: email, name: name,token:token, isFirstLogin:isFirstLogin));
 
             final caloriesBloc = context.read<CaloriesCounterMainBloc>();
             caloriesBloc.add(LoadUserIdAndDateEvent(userId: userId, date: DateTime.now()));
@@ -95,24 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
               await prefs.remove('email');
               await prefs.remove('password');
             }
-
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) =>
-            //     MultiBlocProvider(
-            //       providers: [
-            //         BlocProvider<SportMainBloc>.value(
-            //           value: context.read<SportMainBloc>(),
-            //         ),
-            //         BlocProvider<CaloriesCounterMainBloc>.value(
-            //           value: context.read<CaloriesCounterMainBloc>(),
-            //         ),
-            //       ],
-            //       child: MainMenuScreen(token: token),
-            //       ),
-            //     )
-            // );
+            //use listener to navigate to main screen only after data loaded
           }
         } else {
           final error = jsonDecode(response.body)['message'];
@@ -149,25 +142,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _checkAllBlocsLoaded(BuildContext context) {
-    if (_isSportBlocLoaded && _isCaloriesBlocLoaded) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MultiBlocProvider(
-            providers: [
-              BlocProvider<SportMainBloc>.value(
-                value: context.read<SportMainBloc>(),
-              ),
-              BlocProvider<CaloriesCounterMainBloc>.value(
-                value: context.read<CaloriesCounterMainBloc>(),
-              ),
-            ],
-            child: MainMenuScreen(
-              token: token, // Replace with the actual token
-            ),
+    if (_isSportBlocLoaded && _isCaloriesBlocLoaded && _isUserLoaded) {
+      if(context.read<UserBloc>().state.isFirstLogin == true){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                GuidingDashboard(username: context.read<UserBloc>().state.name!,token: token,)
           ),
-        ),
-      );
+        );
+      }else{
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider<SportMainBloc>.value(
+                    value: context.read<SportMainBloc>(),
+                  ),
+                  BlocProvider<CaloriesCounterMainBloc>.value(
+                    value: context.read<CaloriesCounterMainBloc>(),
+                  ),
+                ],
+                child: MainMenuScreen(
+                  token: token,
+                ),
+              ),
+            ),
+          );
+      }
     }
   }
 
@@ -196,6 +199,17 @@ class _LoginScreenState extends State<LoginScreen> {
           },
           listenWhen: (context, state) {
             return (state.status == CaloriesCounterMainStatus.mealListLoaded);
+          },
+        ),
+        BlocListener<UserBloc, UserState>(
+          listener: (context, state) {
+            setState(() {
+              _isUserLoaded = true;
+            });
+            _checkAllBlocsLoaded(context);
+          },
+          listenWhen: (context, state) {
+            return (state.status == UserStatus.userInfoLoaded);
           },
         ),
       ],
@@ -260,6 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             DefaultTextFormField(
                               controller: _emailController,
                               labelText: 'Email',
+                              labelColor: Colors.grey,
                               prefixIcon: Icons.email,
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {

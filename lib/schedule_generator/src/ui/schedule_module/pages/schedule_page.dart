@@ -27,7 +27,7 @@ class _SchedulePageState extends State<SchedulePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Fetch tasks after the first frame is rendered
       Provider.of<UserController>(context, listen: false)
-          .fetchUser('4');
+          .fetchUser(widget.user_id);
     });
     _timelineKey = UniqueKey();
   }

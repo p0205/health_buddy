@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:health_buddy/schedule_generator/src/repositories/todo_repository.dart';
 import 'package:provider/provider.dart';
 
-import 'controller/todo_controller.dart';
-import 'controller/user_controller.dart';
-import 'repositories/user_repository.dart';
-import 'ui/schedule_module/pages/schedule_page.dart';
+import 'package:health_buddy/schedule_generator/src/controller/todo_controller.dart';
+import 'package:health_buddy/schedule_generator/src/controller/user_controller.dart';
+import 'package:health_buddy/schedule_generator/src/repositories/todo_repository.dart';
+import 'package:health_buddy/schedule_generator/src/repositories/user_repository.dart';
+import 'package:health_buddy/schedule_generator/src/ui/schedule_module/pages/schedule_page.dart';
 //
 // void main() {
 //   runApp(
@@ -33,7 +33,7 @@ import 'ui/schedule_module/pages/schedule_page.dart';
 //   );
 // }
 
-class ScheduleGeneratorApp extends StatelessWidget{
+class ScheduleGeneratorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -46,34 +46,33 @@ class ScheduleGeneratorApp extends StatelessWidget{
         ),
         ChangeNotifierProvider(
           create: (context) => TodoController(
-              context.read<TodoRepository>()
+            context.read<TodoRepository>(),
           ),
         ),
         ChangeNotifierProvider(
           create: (context) => UserController(
-              context.read<UserRepository>()
+            context.read<UserRepository>(),
           ),
         ),
       ],
-      child: const MyApp(),
+      child: ScheduleApp(),
     );
   }
-
 }
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+
+class ScheduleApp extends StatelessWidget {
+  const ScheduleApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Health Buddy',
+      title: 'Health Buddy - Schedule',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:
-        const SchedulePage(user_id: '4'),
+      home: const SchedulePage(user_id: '4'),
     );
   }
 }

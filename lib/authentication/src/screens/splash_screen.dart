@@ -31,7 +31,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     Timer(Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) =>
+            LoginScreen()),
       );
     });
   }
@@ -92,9 +93,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   ),
                 ),
                 SizedBox(height: 30),
-                CircularProgressIndicator(
-                  color: Colors.white,
-                ),
+                // CircularProgressIndicator(
+                //   color: Colors.white,
+                // ),
               ],
             ),
           ),
