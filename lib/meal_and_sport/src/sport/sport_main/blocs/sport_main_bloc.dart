@@ -51,9 +51,8 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
     final SportSummary sportSummary = await sportRepository.getSportSummary(state.userId!, state.date!);
     if(sportList.isNotEmpty){
       emit(state.copyWith(status: SportMainStatus.sportListLoaded, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
-      emit(state.copyWith(status: SportMainStatus.initial));
     }else{
-      emit(state.copyWith(status: SportMainStatus.noRecordFound, sportSummary: sportSummary,dateString: sportSummary.date.toString().split(' ')[0]));
+      emit(state.copyWith(status: SportMainStatus.noRecordFound, dateString: sportSummary.date.toString().split(' ')[0]));
     }
   }
 

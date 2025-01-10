@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:health_buddy/schedule_generator/src/models/user.dart';
+import 'package:health_buddy/schedule_generator/src/ui/schedule_module/pages/generate_question.dart';
 import 'package:provider/provider.dart';
+import 'package:health_buddy/schedule_generator/src/controller/todo_controller.dart';
 
-import '../../../controller/todo_controller.dart';
 import '../../../core/enums/loading_state.dart';
 import '../../../models/todo_task.dart';
-import '../../../models/user.dart';
-import '../pages/generate_question.dart';
 import 'edit_task_form.dart';
 
 class ScrollableTimeline extends StatefulWidget {
@@ -233,24 +233,24 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
               Expanded(
                 flex: 1,
                 child:
-                  createTaskContainer(todoTask),
+                createTaskContainer(todoTask),
 
               )
             else
               Expanded(
-                  flex: 1,
-                  child:
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: calculateHeight(currTime, todoTask.startTime),
-                      ),
+                flex: 1,
+                child:
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      height: calculateHeight(currTime, todoTask.startTime),
+                    ),
 
-                      createTaskContainer(todoTask),
-                    ],
-                  ),
+                    createTaskContainer(todoTask),
+                  ],
+                ),
               )
         ],
       );
@@ -277,7 +277,11 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
       onTap: () {
         showDialog(
           context: context,
-          builder: (BuildContext context) => EditTaskForm(todoTask: todoTask),  // Properly return the widget
+          builder: (BuildContext context) => EditTaskForm(
+              user: this.widget.user,
+              todoTask: todoTask,
+              date: this.widget.date
+          ),  // Properly return the widget
         );
       },
       child: Container(
@@ -308,8 +312,17 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
               } else {
                 todoTask.isComplete = true;
               }
-              // Provider.of<TodoController>(context, listen: false)
-              //    .updateTaskCompletion(todoTask, value ?? false);
+              final updatedTask = TodoTask(
+                id: todoTask.id,
+                title: todoTask.title,
+                description: todoTask.description,
+                startTime: todoTask.startTime,
+                endTime: todoTask.endTime,
+                isComplete: todoTask.isComplete,
+                type: todoTask.type,
+              );
+              Provider.of<TodoController>(context, listen: false)
+                  .updateTodoTask(updatedTask, this.widget.date, this.widget.user);
             },
           ),
         ),

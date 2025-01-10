@@ -28,6 +28,7 @@ class SportDataProvider{
       : _baseUrl = _getBaseUrl(),
         _httpClient = httpClient ?? http.Client();
 
+
   // emulator
   static String _getBaseUrl() {
     if (Platform.isAndroid) {
@@ -35,6 +36,7 @@ class SportDataProvider{
 
     } else {
       return "http://localhost:8080";
+
     }
   }
 
