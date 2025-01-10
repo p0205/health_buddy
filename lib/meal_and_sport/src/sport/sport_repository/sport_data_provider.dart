@@ -34,7 +34,7 @@ class SportDataProvider{
       return Constants.BaseUrl + Constants.SportNMealPort; // Android emulator localhost
 
     } else {
-      return "localhost:8080";
+      return "http://localhost:8080";
     }
   }
 
@@ -49,7 +49,8 @@ class SportDataProvider{
   // api : GET localhost:8080/sport/search
   Future<List<Sport>> getMatchingSportList(String query) async {
 
-    final uri = Uri.http(_baseUrl,"/sport/search",{'query':query});
+    final uri = Uri.parse('$_baseUrl/sport/search?query=$query');
+
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -61,7 +62,8 @@ class SportDataProvider{
 
   // api : GET localhost:8080/sport/{sportId}
   Future<Sport> getSport(int id) async {
-    final uri = Uri.http(_baseUrl,"/sport/${id.toString()}");
+    final uri = Uri.parse('$_baseUrl/sport/${id.toString()}');
+
 
     final response = await _httpClient.get(uri);
 
@@ -74,7 +76,8 @@ class SportDataProvider{
 
   // api : POST localhost:8080/sport
   Future<void> addSport(Sport sport)async{
-    final uri = Uri.http(_baseUrl,"/sport");
+    final uri = Uri.parse('$_baseUrl/sport');
+
 
     final response = await _httpClient.post(
         uri,
@@ -89,7 +92,8 @@ class SportDataProvider{
   // api : GET localhost:8080/sport/type
   Future<List<String>> getDistinctSportTypes() async {
 
-    final uri = Uri.http(_baseUrl,"/sport/types");
+    final uri = Uri.parse('$_baseUrl/sport/types');
+
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -105,7 +109,8 @@ class SportDataProvider{
 
     String formatedDate = formatDate(date);
 
-    final uri = Uri.http(_baseUrl,"/sport/user/${userId.toString()}",{"date": formatedDate});
+    final uri = Uri.parse('$_baseUrl/sport/user/${userId.toString()}?date=$formatedDate');
+
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -128,7 +133,7 @@ class SportDataProvider{
       "durationInHours": durationInHours,
     };
 
-    final uri = Uri.http(_baseUrl,"/sport/user");
+    final uri = Uri.parse('$_baseUrl/sport/user');
 
     final response = await _httpClient.post(
         uri,
@@ -146,7 +151,8 @@ class SportDataProvider{
   Future<SportSummary> getSportSummary(int userId,DateTime date) async{
     String formatedDate = formatDate(date);
 
-    final uri = Uri.http(_baseUrl,"/sport/user/${userId.toString()}/summary",{"date": formatedDate});
+    final uri = Uri.parse('$_baseUrl/sport/user/${userId.toString()}/summary?date=$formatedDate');
+
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -163,7 +169,8 @@ class SportDataProvider{
 
   // api : DELETE localhost:8080/sport/user/{userSportId}
   Future<void> deleteUserSport(int userSportId) async {
-    final uri = Uri.http(_baseUrl,"/sport/user/${userSportId.toString()}");
+    final uri = Uri.parse('$_baseUrl/sport/user/${userSportId.toString()}');
+
     final response = await _httpClient.delete(uri);
     if(response.statusCode != 204){
       throw DeleteUserSportFailure();

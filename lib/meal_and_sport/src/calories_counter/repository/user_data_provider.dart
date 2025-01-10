@@ -22,7 +22,7 @@ class UserDataProvider {
     if (Platform.isAndroid) {
       return Constants.BaseUrl + Constants.SportNMealPort; // Android emulator localhost
     } else{
-      return "localhost:8080"; // Default for other platforms
+      return "http://localhost:8080"; // Default for other platforms
     }
   }
 
@@ -53,8 +53,7 @@ class UserDataProvider {
   // }
 
   Future<String> getUserWeight(int id) async {
-    final uri = Uri.http(_baseUrl,"/user/${id.toString()}/weight");
-
+    final uri = Uri.parse('$_baseUrl/user/${id.toString()}/weight');
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
@@ -66,7 +65,7 @@ class UserDataProvider {
 
   Future<void> markFirstLogin(int userId, bool isFirstLogin) async {
 
-    final uri = Uri.http(_baseUrl,"/user/${userId.toString()}/first-login");
+    final uri = Uri.parse('$_baseUrl/user/${userId.toString()}/first-login');
 
     // The request payload
     final payload = jsonEncode({'isFirstLogin': isFirstLogin});
