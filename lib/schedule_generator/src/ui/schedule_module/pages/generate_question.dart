@@ -23,6 +23,8 @@ class _GenerateQuestionPageState extends State<GenerateQuestionPage> {
   final _endTimeController = TextEditingController();
   final _healthHistoryController = TextEditingController();
   final _familyMemberController = TextEditingController();
+  late TimeOfDay startTime = TimeOfDay.now();
+  late TimeOfDay endTime = TimeOfDay.now();
 
   String? _areaOfLiving;
   List<String> _healthHistory = [];
@@ -65,9 +67,7 @@ class _GenerateQuestionPageState extends State<GenerateQuestionPage> {
       final user = userController.user;
 
       // Wait for genTodo to complete
-      print('Starting genTodo for user ${user?.id}');
       await todoController.genTodo(user!);
-      print('Completed genTodo for user ${user.id}');
 
       if (mounted) {
         // Add a small delay to ensure DB operations are complete
@@ -89,6 +89,52 @@ class _GenerateQuestionPageState extends State<GenerateQuestionPage> {
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  TimeOfDay _parseTimeString(String timeString) {
+    // Handle the time string parsing based on your format
+    // This is an example, adjust based on your actual time format
+    final timeParts = timeString.split(':');
+    return TimeOfDay(
+        hour: int.parse(timeParts[0]),
+        minute: int.parse(timeParts[1])
+    );
+  }
+
+  TimeOfDay _parseTimeStringFromDb(String timeString) {
+    if (timeString == '2400') {
+      // Convert 2400 to 23:59
+      return TimeOfDay(hour: 23, minute: 59);
+    }
+
+    // Ensure the time string is valid and in HHMM format
+    if (timeString.length == 4) {
+      final hour = int.parse(timeString.substring(0, 2));
+      final minute = int.parse(timeString.substring(2, 4));
+
+      // Validate hour and minute ranges
+      if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+        return TimeOfDay(hour: hour, minute: minute);
+      }
+    }
+
+    throw FormatException('Invalid time string format');
+  }
+
+  Future<void> _selectTime(BuildContext context, bool isStart) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: isStart ? startTime : endTime,
+    );
+    if (picked != null) {
+      setState(() {
+        if (isStart) {
+          startTime = picked;
+        } else {
+          endTime = picked;
+        }
+      });
     }
   }
 
@@ -121,35 +167,21 @@ class _GenerateQuestionPageState extends State<GenerateQuestionPage> {
               const SizedBox(height: 20),
               const Text('Working Time'),
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _startTimeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Start Time',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) return 'Required';
-                        return null;
-                      },
-                    ),
+                  const Text('Time:'),
+                  const SizedBox(width: 4),
+                  TextButton.icon(
+                    onPressed: () => _selectTime(context, true),
+                    icon: const Icon(Icons.access_time),
+                    label: Text(startTime.format(context)),
                   ),
-                  const SizedBox(width: 16),
-                  const Text('to'),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _endTimeController,
-                      decoration: const InputDecoration(
-                        labelText: 'End Time',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) return 'Required';
-                        return null;
-                      },
-                    ),
+                  const Text(' - '),
+                  TextButton.icon(
+                    onPressed: () => _selectTime(context, false),
+                    icon: const Icon(Icons.access_time),
+                    label: Text(endTime.format(context)),
                   ),
                 ],
               ),

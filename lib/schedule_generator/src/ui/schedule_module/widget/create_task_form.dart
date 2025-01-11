@@ -43,8 +43,6 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
   Widget build(BuildContext context) {
     return Dialog(
         child: SingleChildScrollView(
-          child: Card(
-            elevation: 4,
             child: Stack(
               children: [
                 Padding(
@@ -164,8 +162,7 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
                 ),
               ],
             ),
-          ),
-        )
+          )
 
     );
   }

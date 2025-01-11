@@ -21,7 +21,7 @@ class TodoRepository{
       // Fetch Todos by sending a POST request with body
       final todoResponse = await http.get(
 
-        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/todos/'+userId+"/"+formattedDate), //change api url - ip address needed if using physical device
+        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/todos/'+userId+"/"+formattedDate),
 
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +91,7 @@ class TodoRepository{
 
       // Fetch Todos by sending a POST request with body
       final userResponse = await http.post(
-        Uri.parse('http://10.131.76.175:5000/api/v1/todos/'+ userId + '/' + formattedDate),
+        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/todos/'+ userId + '/' + formattedDate),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
@@ -123,7 +123,7 @@ class TodoRepository{
       print(formattedDate);
 
       final userResponse = await http.put(
-        Uri.parse('http://10.131.76.175:5000/api/v1/todos/'+ userId + '/' + formattedDate),
+        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/todos/'+ userId + '/' + formattedDate),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
@@ -150,7 +150,7 @@ class TodoRepository{
       String formattedDate = date.toIso8601String().split('T')[0];
 
       final userResponse = await http.delete(
-        Uri.parse('http://10.131.76.175:5000/api/v1/todos/'+ userId + '/' + taskId + '/' + formattedDate),
+        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/todos/'+ userId + '/' + taskId + '/' + formattedDate),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"

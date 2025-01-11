@@ -59,13 +59,17 @@ class MainMenuScreen extends StatelessWidget {
           'Accept': 'application/json',
         },
       );
-
+      final prefs = await SharedPreferences.getInstance();
       if (response.statusCode == 200) {
-
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove('email');
-        await prefs.remove('password');
-        await prefs.remove('rememberMe');
+        if (prefs.getBool('rememberMe') == false) {
+          // Clear all stored data
+          await prefs.clear();
+        } else {
+          // Clear only the token
+          final email = prefs.getString('email');
+          await prefs.setString('email', email!);
+          await prefs.setBool('rememberMe', true);
+        }
 
         // Optionally, clear any other session data or token if needed
         // You can also clear the token here if you're storing it in SharedPreferences
@@ -94,6 +98,7 @@ class MainMenuScreen extends StatelessWidget {
         'An error occurred: $e',
       );
     }
+
   }
 
   @override

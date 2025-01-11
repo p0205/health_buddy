@@ -330,4 +330,3 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     );
   }
 }
-
