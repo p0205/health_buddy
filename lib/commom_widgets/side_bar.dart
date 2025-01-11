@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/screen/sport_main_page.dart';
+import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
+import 'package:health_buddy/riskAssessment/src/screen/risk_main_screen.dart';
 
 
 import '../authentication/src/screens/main_menu_screen.dart';
@@ -49,10 +51,6 @@ class SideBar extends StatelessWidget {
                 bloc.add(ReloadMealList());
                 sportBloc.add(SportDateChangedEvent(date: DateTime.now()));
                 sportBloc.add(LoadUserSportList());
-                print("Sport State");
-                print(sportBloc.state.status);
-                print("Meal State");
-                print(bloc.state.status);
                 // Show a loading indicator
                 showDialog(
                   context: context,
@@ -72,11 +70,10 @@ class SideBar extends StatelessWidget {
                 Navigator.of(context, rootNavigator: true).pop();
 
                 // Proceed to navigation
-                final token = context.read<UserBloc>().state.token;
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MainMenuScreen(token: token!),
+                    builder: (context) => MainMenuScreen(),
                   ),
                 );
               },
@@ -147,9 +144,21 @@ class SideBar extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.assessment),
-              title: const Text('Assessment'),
+              title: const Text('Risk Assessment'),
               onTap: () {
-                Navigator.pop(context);
+                final bloc = context.read<RiskBloc>();
+                bloc.add(LoadTestTypeEvent());
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) {
+                        return BlocProvider.value(
+                          value: bloc,
+                          child: RiskMainScreen(),
+                        );
+                      }, settings: const RouteSettings(name: "/riskMain")
+                  ),
+                );
               },
             ),
           ],

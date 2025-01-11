@@ -6,6 +6,8 @@ import 'package:health_buddy/meal_and_sport/src/main.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/search_sport/bloc/search_sport_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import 'package:health_buddy/newUserGuide/guiding/guiding_dashboard.dart';
+import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
+import 'package:health_buddy/riskAssessment/src/screen/risk_main_screen.dart';
 import 'package:health_buddy/schedule_generator/src/main.dart';
 import 'package:provider/provider.dart';
 
@@ -67,6 +69,9 @@ void main() {
           ),
           BlocProvider<SportMainBloc>(
             create: (context) => SportMainBloc(),
+          ),
+          BlocProvider<RiskBloc>(
+            create: (context) => RiskBloc(),
           ),
           // Other Providers
           Provider(

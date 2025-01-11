@@ -43,13 +43,14 @@ void showPopupDialog(BuildContext context, String message, {VoidCallback? onOkPr
 }
 
 class MainMenuScreen extends StatelessWidget {
-  final String token;
+
 
   // Constructor to receive the token
-  const MainMenuScreen({super.key, required this.token});
+  const MainMenuScreen({super.key});
 
   Future<void> _logout(BuildContext context) async {
     try {
+      final token = context.read<UserBloc>().state.token!;
       final url = Uri.parse(Constants.BaseUrl + Constants.AunthenticationPort + '/logout'); // Replace with your backend logout URL
 
       final response = await http.post(

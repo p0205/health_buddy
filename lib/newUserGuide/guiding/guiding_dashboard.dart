@@ -13,8 +13,7 @@ import 'guiding_side_bar.dart';
 
 class GuidingDashboard extends StatefulWidget {
   final String username;
-  final String token;
-  const GuidingDashboard({super.key, required this.username,required this.token});
+  const GuidingDashboard({super.key, required this.username});
 
   @override
   State<GuidingDashboard> createState() => _GuidingDashboardState();
@@ -203,9 +202,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                   value: context.read<CaloriesCounterMainBloc>(),
                 ),
               ],
-              child: MainMenuScreen(
-                token: widget.token, // Replace with the actual token
-              ),
+              child: MainMenuScreen(),
             ),
           ),
         );

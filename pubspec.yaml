@@ -44,7 +44,7 @@ dependencies:
   dotted_border: ^2.1.0
 
   showcaseview: ^4.0.0
-
+  survey_kit: ^1.0.0-dev.9
   easy_date_timeline: ^2.0.6
   hydrated_bloc: ^9.1.5
   provider: ^6.1.2
@@ -83,6 +83,7 @@ flutter:
     - assets/images/BACKGROUND.png
     - assets/images/USER_ICON.png
     - assets/images/LOGO.png
+    - assets/images/check_mark.jpeg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
