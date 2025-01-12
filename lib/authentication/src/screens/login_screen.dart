@@ -48,17 +48,22 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = prefs.getString('password');
     final rememberMe = prefs.getBool('rememberMe') ?? false;
 
+    print("Loaded credentials: email=$email, rememberMe=$rememberMe");
+
     if (email != null && password != null && rememberMe) {
-      setState(() {
-        _emailController.text = email;
-        _passwordController.text = password;
-        _rememberMe = true;
-      });
-    }
-    else {
-      setState(() {
-        _rememberMe = false;
-      });
+      if (mounted) {
+        setState(() {
+          _emailController.text = email;
+          _passwordController.text = password;
+          _rememberMe = true;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          _rememberMe = false;
+        });
+      }
     }
   }
 
@@ -101,9 +106,11 @@ class _LoginScreenState extends State<LoginScreen> {
             if (_rememberMe) {
               await prefs.setString('email', email);
               await prefs.setString('password', password);
+              await prefs.setBool('rememberMe', true);
             } else {
               await prefs.remove('email');
               await prefs.remove('password');
+              await prefs.setBool('rememberMe', false);
             }
             //use listener to navigate to main screen only after data loaded
           }
