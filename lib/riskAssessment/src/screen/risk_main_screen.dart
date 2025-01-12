@@ -83,7 +83,7 @@ class _RiskMainScreenState extends State<RiskMainScreen> {
 
   }
   Widget _buildTestOptionCard(BuildContext context, UserTestStatus test) {
-    final riskBloc = context.read<RiskBloc>().state;
+
     final isCompleted = test.isCompleted; // Assuming `HealthTest` has an `isCompleted` field.
     return Card(
       elevation: 4,

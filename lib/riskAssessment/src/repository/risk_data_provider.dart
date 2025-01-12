@@ -64,14 +64,24 @@ class RiskDataProvider{
   Future<Questionnaire> getFilteredQuestionnare(int userId, int healthTestId) async {
 
     final uri = Uri.parse('$_baseUrl/ai/filter-questions/${userId.toString()}/${healthTestId.toString()}');
-    final response = await _httpClient.get(uri);
 
-    if(response.statusCode != 200){
-      throw GetFilteredQuestionFailure();
-    }
-    // Questionnaire questionnaire =  Questionnaire.fromJson(response);
-    Questionnaire questionnaire =  Questionnaire.fromJson(json.decode(response.body));
-    return questionnaire;
+      final response = await _httpClient.get(uri);
+      print("code::::");
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        // Successful response, parse the data
+        Questionnaire questionnaire = Questionnaire.fromJson(json.decode(response.body));
+        return questionnaire;
+      } else if (response.statusCode == 429) {
+        // Handle quota exceeded error
+        throw Exception("Quota exceeded for AI platform. Please try again later.");
+      } else if (response.statusCode == 500) {
+        // Handle generic server error
+        throw Exception("Error generating content. Please try again later.");
+      } else {
+        // Handle unexpected error responses
+        throw Exception("Unexpected error occurred. Status code: ${response.statusCode}");
+      }
   }
 
   // api : GET http://localhost:8080/ai/suggestions/{userId}/{healthTestId}?score=?
@@ -79,14 +89,25 @@ class RiskDataProvider{
 
     final uri = Uri.parse('$_baseUrl/ai/suggestions/${userId.toString()}/${healthTestId.toString()}?score=${score}');
 
-    final response = await _httpClient.get(uri);
 
-    if(response.statusCode != 200){
-      throw GetAISuggestionFailure();
-    }
+      final response = await _httpClient.get(uri);
 
-   AiSuggestionResponse aiSuggestionResponse = AiSuggestionResponse.fromJson(json.decode(response.body));
-    return aiSuggestionResponse;
+      print("code::::");
+      print(response.statusCode);
+      if(response.statusCode == 200){
+        AiSuggestionResponse aiSuggestionResponse = AiSuggestionResponse.fromJson(json.decode(response.body));
+        return aiSuggestionResponse;
+      }else if (response.statusCode == 429) {
+        // Handle quota exceeded error
+        throw Exception("Quota exceeded for AI platform. Please try again later.");
+      } else if (response.statusCode == 500) {
+        // Handle generic server error
+        throw Exception("Error generating content. Please try again later.");
+      } else {
+        // Handle unexpected error responses
+        throw Exception("Unexpected error occurred. Status code: ${response.statusCode}");
+      }
+
   }
 
   // api : GET http://localhost:8080/riskAssessment/{userId}/{healthTestId}

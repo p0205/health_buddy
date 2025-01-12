@@ -44,28 +44,37 @@ class RiskBloc extends Bloc<RiskEvent,RiskState>{
 
 
 
-  Future<void> _fetchQuestionnareForSelectedTest(LoadQuestionnaireEvent event, Emitter<RiskState> emit) async {
-    Questionnaire questionnaire = await riskRepository.getFilteredQuestionnare(event.userId, event.test.id);
 
-    final score = questionnaire.calculatedScore;
-    final questions = questionnaire.questions;
-    final healthTest = event.test;
-    emit(state.copyWith(status: RiskStatus.questionnaireLoaded, questions: questions, score: score, healthTestSelected: healthTest));
+
+  Future<void> _fetchQuestionnareForSelectedTest(LoadQuestionnaireEvent event, Emitter<RiskState> emit) async {
+    try{
+      Questionnaire questionnaire = await riskRepository.getFilteredQuestionnare(event.userId, event.test.id);
+      final score = questionnaire.calculatedScore;
+      final questions = questionnaire.questions;
+      final healthTest = event.test;
+      emit(state.copyWith(status: RiskStatus.questionnaireLoaded, questions: questions, score: score, healthTestSelected: healthTest));
+    }catch(e){
+      emit(state.copyWith(status: RiskStatus.error, errorMessage: e.toString()));
+    }
   }
 
   Future<void> _getAiResponse(CompleteQuestionnaireEvent event, Emitter<RiskState> emit) async {
-    int score = state.score ?? 0;
-    final int totalScore = event.score + score;
-    emit(state.copyWith(score: totalScore));
-
-    AiSuggestionResponse aiSuggestionResponse = await riskRepository.getAISuggestion(event.userId, totalScore, state.healthTestSelected!.id);
-    HealthTestReport report = HealthTestReport(riskLevel: aiSuggestionResponse.riskLevel, suggestions: aiSuggestionResponse.suggestions);
-    emit(state.copyWith(report: report));
+    try {
+      int score = state.score ?? 0;
+      final int totalScore = event.score + score;
+      emit(state.copyWith(status: RiskStatus.aiResponseLoading, score: totalScore));
+      AiSuggestionResponse aiSuggestionResponse = await riskRepository.getAISuggestion(event.userId, totalScore, state.healthTestSelected!.id);
+      HealthTestReport report = HealthTestReport(riskLevel: aiSuggestionResponse.riskLevel, suggestions: aiSuggestionResponse.suggestions);
+      emit(state.copyWith(status: RiskStatus.aiResponseLoaded, report: report));
+    }catch(e){
+      emit(state.copyWith(status: RiskStatus.error, errorMessage: e.toString()));
+    }
   }
 
   Future<void> _getHealthReport(GetHealthReportEvent event, Emitter<RiskState> emit) async {
+    emit(state.copyWith(status: RiskStatus.loadingReport, healthTestSelected: event.test));
     HealthTestReport report = await riskRepository.getHealthReport(event.userId, event.test.id);
-    emit(state.copyWith(status: RiskStatus.reportLoaded, report: report, healthTestSelected: event.test));
+    emit(state.copyWith(status: RiskStatus.reportLoaded, report: report));
   }
 
   Future<void> _resetRiskState(ResetRiskStateEvent event, Emitter<RiskState> emit) async {
@@ -74,7 +83,9 @@ class RiskBloc extends Bloc<RiskEvent,RiskState>{
   }
 
   Future<void> _resetReport(ResetReportEvent event, Emitter<RiskState> emit) async {
-    emit(state.copyWith(report: null));
+
+    emit(state.copyWith(status: RiskStatus.reportLoaded, report: null));
+
   }
 }
 

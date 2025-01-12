@@ -39,7 +39,7 @@ class _RiskQuestionnaireState extends State<RiskQuestionnaire> {
           color: Colors.white,
           child: BlocBuilder<RiskBloc,RiskState>(
             builder: ( context,  state) {
-              if(state.status == RiskStatus.questionnaireLoaded && state.questions!=null) {
+               if(state.status == RiskStatus.questionnaireLoaded && state.questions!=null) {
                 return Align(
                   alignment: Alignment.center,
                   child: FutureBuilder<Task>(
@@ -64,7 +64,41 @@ class _RiskQuestionnaireState extends State<RiskQuestionnaire> {
                   ),
                 );
               }
-              return const SuggestionLoadingScreen();
+               else if (state.status == RiskStatus.error) {
+                 // Show error dialog
+                 Future.delayed(Duration.zero, () {
+                   showDialog(
+                     context: context,
+                     builder: (BuildContext context) {
+                       return AlertDialog(
+                         title: Text('Error'),
+                         content: Text(
+                           context
+                               .read<RiskBloc>()
+                               .state
+                               .errorMessage!,
+                           style: TextStyle(fontSize: 18, color: Colors.red),
+                         ),
+                         actions: [
+                           TextButton(
+                             onPressed: () {
+                               Navigator.pushReplacement(
+                                 context,
+                                 MaterialPageRoute(
+                                   builder: (context) => MainMenuScreen(),
+                                 ),
+                               );
+                             },
+                             child: Text("OK"),
+                           ),
+                         ],
+                       );
+                     },
+                   );
+                 });
+               }
+
+               return const SuggestionLoadingScreen();
             },
           ),
         ),

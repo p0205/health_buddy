@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
 import 'package:health_buddy/riskAssessment/src/screen/risk_main_screen.dart';
+import 'package:health_buddy/riskAssessment/src/screen/risk_questionnaire_screen.dart';
 import 'package:health_buddy/riskAssessment/src/screen/suggestion_loading_screen.dart';
 
 import '../../../authentication/src/screens/main_menu_screen.dart';
+import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
 
 class SuggestionScreen extends StatefulWidget {
   // final String? riskLevel;
@@ -25,6 +27,8 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
   @override
   Widget build(BuildContext context) {
 
+    print("ENTER SUGGESTION SCREEN");
+    print(context.read<RiskBloc>().state.healthTestSelected);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -50,9 +54,48 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
 
         builder: ( context,  state){
           final riskBloc = context.read<RiskBloc>();
-          if(riskBloc.state.report == null){
-            return SuggestionLoadingScreen();
+
+          if(riskBloc.state.report == null ){
+            if(riskBloc.state.status == RiskStatus.aiResponseLoading){
+              return SuggestionLoadingScreen();
+            }else{
+              return const Center(child: CircularProgressIndicator());
+            }
           }
+          else if (state.status == RiskStatus.error) {
+            // Show error dialog
+            Future.delayed(Duration.zero, () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Error'),
+                    content: Text(
+                      context
+                          .read<RiskBloc>()
+                          .state
+                          .errorMessage!,
+                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MainMenuScreen(),
+                            ),
+                          );
+                        },
+                        child: Text("OK"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            });
+          }
+
 
           final suggestions = context.read<RiskBloc>().state.report!.suggestions;
           final riskLevel = context.read<RiskBloc>().state.report!.riskLevel;
@@ -213,32 +256,100 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
   }
 
   Widget _buildActionButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MainMenuScreen(),
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          );
-        },
-        child: const Text(
-          "Go to Dashboard",
-          style: TextStyle(
-              fontSize: 18,
-              color: Colors.white
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MainMenuScreen(),
+                ),
+              );
+            },
+            child: const Text(
+              "Go to Dashboard",
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white
+              ),
+            ),
           ),
         ),
-      ),
+        const SizedBox(height: 12), // Spacing between buttons
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              _showRetestConfirmationDialog(context);
+            },
+            child: const Text(
+              "Retake the Test",
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showRetestConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Retest"),
+          content: const Text(
+            "Are you sure you want to retake the test? This will clear your current result.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                context.read<RiskBloc>().add(ResetReportEvent());
+                context.read<RiskBloc>().add(
+                  LoadQuestionnaireEvent(
+                    userId: context.read<UserBloc>().state.userId!,
+                    test: context.read<RiskBloc>().state.healthTestSelected!,
+                  ),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RiskQuestionnaire(),
+                  ),
+                );
+              },
+              child: const Text("Confirm"),
+            ),
+          ],
+        );
+      },
     );
   }
 
