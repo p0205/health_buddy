@@ -5,52 +5,54 @@ enum RiskStatus {
   testTypeLoaded,
   questionnaireLoaded,
   selected,
+  reportLoaded
 }
 
 
 class RiskState extends Equatable{
 
   final RiskStatus status;
-  final List<HealthTest>? testType;
+  final List<UserTestStatus>? testStatus;
+  // final List<HealthTest>? testType;
   final HealthTest? healthTestSelected;
   final List<Question>? questions;
   final int? score;
-  final String? riskLevel;
-  final Suggestion? suggestions;
+  final HealthTestReport? report;
 
   const RiskState({
     this.status = RiskStatus.loading,
-    this.testType,
+    this.testStatus,
+    // this.testType,
     this.healthTestSelected,
     this.questions,
     this.score,
-    this.riskLevel,
-    this.suggestions
+    this.report
   });
 
 
   @override
-  List<Object?> get props => [status,healthTestSelected,questions,testType, riskLevel,suggestions];
+  List<Object?> get props => [status,testStatus, healthTestSelected,questions,report];
 
   RiskState copyWith ({
     RiskStatus? status,
-    List<HealthTest>? testType,
+    List<UserTestStatus>? testStatus,
+    // List<HealthTest>? testType,
     HealthTest? healthTestSelected,
     List<Question>? questions,
     int? score,
-    String? riskLevel,
-    Suggestion?  suggestions
+    HealthTestReport? report
   })
   {
     return RiskState(
       status: status ?? this.status,
-      testType: testType ?? this.testType,
+      testStatus: testStatus ?? this.testStatus,
+      // testType: testType ?? this.testType,
       healthTestSelected: healthTestSelected ?? this.healthTestSelected,
       questions: questions ?? this.questions,
       score: score ?? this.score,
-      riskLevel: riskLevel ?? this.riskLevel,
-      suggestions: suggestions ?? this.suggestions
+      report: report ?? this.report
     );
+
   }
 }
 

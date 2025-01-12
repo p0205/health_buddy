@@ -147,7 +147,6 @@ class SideBar extends StatelessWidget {
               title: const Text('Risk Assessment'),
               onTap: () {
                 final bloc = context.read<RiskBloc>();
-                bloc.add(LoadTestTypeEvent());
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

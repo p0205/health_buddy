@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io' show Platform;
+import 'package:health_buddy/riskAssessment/src/model/health_test_report.dart';
+import 'package:health_buddy/riskAssessment/src/model/user_test_status.dart';
 import 'package:health_buddy/riskAssessment/src/model/ai_suggestion_response.dart';
 import 'package:health_buddy/riskAssessment/src/model/health_test.dart';
 import 'package:health_buddy/riskAssessment/src/model/questionnaire.dart';
@@ -13,10 +15,7 @@ import 'package:health_buddy/constants.dart' as Constants;
 class GetAllTestTypeFailure implements Exception{}
 class GetFilteredQuestionFailure implements Exception{}
 class GetAISuggestionFailure implements Exception{}
-class AddUserMealFailure implements Exception{}
-class DeleteUserMealFailure implements Exception{}
-class GetUserMealListByDateFailure implements Exception{}
-class GetNutritionalSummaryFailure implements Exception{}
+class GetHealthReportFailure implements Exception{}
 
 class RiskDataProvider{
 
@@ -37,16 +36,28 @@ class RiskDataProvider{
   }
 
 
-  // api : GET localhost:8080/riskAssessment/test
-  Future<List<HealthTest>> getAllTestType() async {
-    final uri = Uri.parse('$_baseUrl/riskAssessment/test');
+  // // api : GET localhost:8080/riskAssessment/test
+  // Future<List<HealthTest>> getAllTestType() async {
+  //   final uri = Uri.parse('$_baseUrl/riskAssessment/test');
+  //   final response = await _httpClient.get(uri);
+  //
+  //   if(response.statusCode != 200){
+  //     throw GetAllTestTypeFailure();
+  //   }
+  //   List<HealthTest> tests =  HealthTest.fromJsonList(json.decode(response.body));
+  //   return tests;
+  // }
+
+  // api : GET localhost:8080/riskAssessment/test/{userId}
+  Future<List<UserTestStatus>> getUserTestStatus(int userId) async {
+    final uri = Uri.parse('$_baseUrl/riskAssessment/test/${userId.toString()}');
     final response = await _httpClient.get(uri);
 
     if(response.statusCode != 200){
       throw GetAllTestTypeFailure();
     }
-    List<HealthTest> tests =  HealthTest.fromJsonList(json.decode(response.body));
-    return tests;
+    List<UserTestStatus> userTestStatus =  UserTestStatus.fromJsonList(json.decode(response.body));
+    return userTestStatus;
   }
 
   // api : GET localhost:8080/ai/filter-questions/{userId}/{healthTestId}
@@ -63,7 +74,7 @@ class RiskDataProvider{
     return questionnaire;
   }
 
-  // api : http://localhost:8080/ai/suggestions/{userId}/{healthTestId}?score=?
+  // api : GET http://localhost:8080/ai/suggestions/{userId}/{healthTestId}?score=?
   Future<AiSuggestionResponse> getAISuggestion(int userId,int score , int healthTestId) async {
 
     final uri = Uri.parse('$_baseUrl/ai/suggestions/${userId.toString()}/${healthTestId.toString()}?score=${score}');
@@ -76,6 +87,21 @@ class RiskDataProvider{
 
    AiSuggestionResponse aiSuggestionResponse = AiSuggestionResponse.fromJson(json.decode(response.body));
     return aiSuggestionResponse;
+  }
+
+  // api : GET http://localhost:8080/riskAssessment/{userId}/{healthTestId}
+  Future<HealthTestReport> getHealthReport(int userId, int healthTestId) async {
+
+    final uri = Uri.parse('$_baseUrl/riskAssessment/${userId.toString()}/${healthTestId.toString()}');
+
+    final response = await _httpClient.get(uri);
+
+    if(response.statusCode != 200){
+      throw GetHealthReportFailure();
+    }
+
+    HealthTestReport healthTestReport = HealthTestReport.fromJson(json.decode(response.body));
+    return healthTestReport;
   }
 
 }

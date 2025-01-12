@@ -6,12 +6,12 @@ abstract class RiskEvent extends Equatable{
   List<Object?> get props => [];
 }
 
-class LoadTestTypeEvent extends RiskEvent{}
+// class LoadTestTypeEvent extends RiskEvent{}
 
-class HealthTestSelectedEvent extends RiskEvent{
+class LoadQuestionnaireEvent extends RiskEvent{
   final int userId;
   final HealthTest test;
-  const HealthTestSelectedEvent({
+  const LoadQuestionnaireEvent({
       required this.userId,
       required this.test
   });
@@ -28,4 +28,35 @@ class CompleteQuestionnaireEvent extends RiskEvent{
 }
 
 
+class LoadUserTestStatusEvent extends RiskEvent{
+  final int userId;
+  const LoadUserTestStatusEvent({
+    required this.userId,
+  });
+}
 
+class GetHealthReportEvent extends  RiskEvent{
+  final int userId;
+  final HealthTest test;
+  const GetHealthReportEvent({
+    required this.userId,
+    required this.test,
+  });
+}
+
+class ResetRiskStateEvent extends RiskEvent {
+  final int userId;
+  const ResetRiskStateEvent({
+    required this.userId,
+  });
+}
+
+
+class ResetReportEvent extends RiskEvent{}
+
+class HealthTestSelectedEvent extends RiskEvent{
+  final HealthTest test;
+  const HealthTestSelectedEvent({
+    required this.test,
+  });
+}

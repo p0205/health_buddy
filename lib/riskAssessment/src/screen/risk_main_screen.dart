@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/commom_widgets/side_bar.dart';
 import 'package:health_buddy/meal_and_sport/src/user/blocs/user_bloc.dart';
 import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
+import 'package:health_buddy/riskAssessment/src/model/user_test_status.dart';
 import 'package:health_buddy/riskAssessment/src/model/health_test.dart';
+import 'package:health_buddy/riskAssessment/src/screen/suggestion_screen.dart';
 
 import 'risk_questionnaire_screen.dart';
 
@@ -15,6 +17,13 @@ class RiskMainScreen extends StatefulWidget {
 }
 
 class _RiskMainScreenState extends State<RiskMainScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    final userId = context.read<UserBloc>().state.userId!;
+    context.read<RiskBloc>().add(ResetRiskStateEvent(userId: userId));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +45,7 @@ class _RiskMainScreenState extends State<RiskMainScreen> {
           padding: const EdgeInsets.all(16.0),
           child: BlocBuilder<RiskBloc,RiskState>(
             builder: (context,state) {
-              if(state.testType!=null) {
+              if(state.testStatus!=null) {
                 return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -58,7 +67,7 @@ class _RiskMainScreenState extends State<RiskMainScreen> {
                       const SizedBox(height: 16),
                       Expanded(
                         child: ListView(
-                          children: (state.testType!).map((test) {
+                          children: (state.testStatus!).map((test) {
                             return _buildTestOptionCard(context, test);
                           }).toList(),
                         ),
@@ -73,8 +82,9 @@ class _RiskMainScreenState extends State<RiskMainScreen> {
         );
 
   }
-  Widget _buildTestOptionCard(BuildContext context, HealthTest test) {
-    final isCompleted = true; // Assuming `HealthTest` has an `isCompleted` field.
+  Widget _buildTestOptionCard(BuildContext context, UserTestStatus test) {
+    final riskBloc = context.read<RiskBloc>().state;
+    final isCompleted = test.isCompleted; // Assuming `HealthTest` has an `isCompleted` field.
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 16),
@@ -83,39 +93,44 @@ class _RiskMainScreenState extends State<RiskMainScreen> {
             ? const Icon(Icons.check_circle, color: Colors.green, size: 28) // Green check icon
             : const Icon(Icons.circle_outlined, color: Colors.grey, size: 28), // Grey icon for not started
         title: Text(
-          test.diseaseName,
+          test.healthTest.diseaseName,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         trailing: isCompleted
             ? const Icon(Icons.description, color: Colors.green) // Indicator for completed test
             : const Icon(Icons.arrow_forward_ios, color: Colors.grey), // Default forward icon
         onTap: () {
-          // if (isCompleted) {
-          //   // Navigate to the results screen
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => ResultsScreen(
-          //         userId: context.read<UserBloc>().state.userId!,
-          //         test: test,
-          //       ),
-          //     ),
-          //   );
-          // } else {
-          //   // Navigate to the questionnaire for new tests
-          //   context.read<RiskBloc>().add(
-          //     HealthTestSelectedEvent(
-          //       userId: context.read<UserBloc>().state.userId!,
-          //       test: test,
-          //     ),
-          //   );
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => const RiskQuestionnaire(),
-          //     ),
-          //   );
-          // }
+          if (isCompleted) {
+            final userId = context
+                .read<UserBloc>()
+                .state
+                .userId;
+            final riskBloc = context.read<RiskBloc>();
+            riskBloc.add(GetHealthReportEvent(
+                userId: userId!, test: test.healthTest));
+            // Navigate to the results screen
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SuggestionScreen(),
+              ),
+            );
+
+          } else {
+            // Navigate to the questionnaire for new tests
+            context.read<RiskBloc>().add(
+              LoadQuestionnaireEvent(
+                userId: context.read<UserBloc>().state.userId!,
+                test: test.healthTest,
+              ),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RiskQuestionnaire(),
+              ),
+            );
+          }
         },
       ),
     );

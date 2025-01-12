@@ -109,9 +109,10 @@ class _RiskQuestionnaireState extends State<RiskQuestionnaire> {
     return questions.map((question) {
       // Map conditions to text choices
       final List<TextChoice> textChoices = question.conditions.map((condition) {
+        int weight = condition.weight ?? 1;
         return TextChoice(
           id: condition.condition,
-          value: condition.score.toString(),
+          value: (condition.score * weight).toString(),
           text: condition.condition,
         );
       }).toList();
@@ -172,6 +173,8 @@ class _SurveyKitViewState extends State<SurveyKitView> {
         int score = 0;
 
         for (var stepResult in result.results) {
+          print("scoreeee");
+          print(stepResult.result.toString());
             if (stepResult.result is String) {
               // Handle String answers
               score += int.tryParse(stepResult.result ?? "0") ?? 0;
@@ -184,6 +187,8 @@ class _SurveyKitViewState extends State<SurveyKitView> {
             }
 
         }
+        print("Total score");
+        print(score);
         int userId = context.read<UserBloc>().state.userId!;
         context.read<RiskBloc>().add(CompleteQuestionnaireEvent(score: score,userId:userId ));
 

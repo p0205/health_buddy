@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
+import 'package:health_buddy/riskAssessment/src/screen/risk_main_screen.dart';
 import 'package:health_buddy/riskAssessment/src/screen/suggestion_loading_screen.dart';
 
 import '../../../authentication/src/screens/main_menu_screen.dart';
@@ -33,17 +34,28 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
           ),
         ),
         backgroundColor: Colors.blue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  RiskMainScreen()),
+            );
+          },
+        ),
       ),
+
       body: BlocBuilder<RiskBloc,RiskState>(
 
         builder: ( context,  state){
-
-          if(context.read<RiskBloc>().state.suggestions == null || context.read<RiskBloc>().state.riskLevel == null){
+          final riskBloc = context.read<RiskBloc>();
+          if(riskBloc.state.report == null){
             return SuggestionLoadingScreen();
           }
 
-          final suggestions = context.read<RiskBloc>().state.suggestions!;
-          final riskLevel = context.read<RiskBloc>().state.riskLevel!;
+          final suggestions = context.read<RiskBloc>().state.report!.suggestions;
+          final riskLevel = context.read<RiskBloc>().state.report!.riskLevel;
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +92,8 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
 
 
   Widget _buildRiskLevelHeader(BuildContext context) {
-    final riskLevel = context.read<RiskBloc>().state.riskLevel!;
+    final riskLevel = context.read<RiskBloc>().state.report!.riskLevel;
+    final healthTest = context.read<RiskBloc>().state.healthTestSelected!.diseaseName;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Hero(
@@ -112,8 +125,8 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
                       size: 32,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'Your Health Status',
+                    Text(
+                      "$healthTest Risk",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -232,8 +245,7 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
 
 }
 
-
- Color _getRiskColor(String riskLevel) {
+Color _getRiskColor(String riskLevel) {
   switch (riskLevel.toLowerCase() ?? '') {
     case 'low':
       return Colors.green;
@@ -241,6 +253,8 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
       return Colors.orange;
     case 'high':
       return Colors.red;
+    case 'very high':
+      return Colors.deepPurple; // A darker shade to signify the severity
     default:
       return Colors.purple;
   }
@@ -254,6 +268,8 @@ IconData _getRiskIcon(String riskLevel) {
       return Icons.warning;
     case 'high':
       return Icons.error;
+    case 'very high':
+      return Icons.dangerous; // Icon to indicate extreme risk
     default:
       return Icons.info;
   }
@@ -267,53 +283,9 @@ String _getPositiveMessage(String riskLevel) {
       return "You're on the right track! These tips can help you improve. 💪";
     case 'high':
       return "Don't worry! These tips can help you manage and improve your health. 💖";
+    case 'very high':
+      return "It's critical to act now. Follow these tips to reduce risks and prioritize your health. 🚨";
     default:
       return "Every step counts! Let's work on your health together. 🌈";
   }
 }
-
-
-
-// void main() {
-//   runApp(
-//     MyApp()
-//   );
-// }
-//
-// Map<String, List<String>> suggestions= {
-//   "exercise": [
-//     "Engage in at least 150 minutes of moderate-intensity aerobic activity or 75 minutes of vigorous-intensity aerobic activity per week.",
-//     "Incorporate activities like brisk walking, jogging, cycling, or swimming into your routine.",
-//     "Aim for at least 30 minutes of exercise most days of the week.",
-//     "Consider joining a fitness class or finding an exercise buddy for motivation and support."
-//   ],
-//   "diet": [
-//     "Adopt a DASH (Dietary Approaches to Stop Hypertension) diet, which emphasizes fruits, vegetables, whole grains, lean protein, and low-fat dairy.",
-//     "Limit your sodium intake to less than 2,300 milligrams per day, ideally aiming for 1,500 milligrams or less.",
-//     "Reduce your consumption of saturated and trans fats, found in processed foods, fatty meats, and full-fat dairy products.",
-//     "Increase your intake of potassium-rich foods like bananas, sweet potatoes, and beans, which can help lower blood pressure."
-//   ],
-//   "healthCheckups": [
-//     "Schedule regular checkups with your doctor to monitor your blood pressure and overall health.",
-//     "Discuss your blood pressure readings with your doctor and follow their recommendations for management.",
-//     "Ask your doctor about any necessary lifestyle modifications or medications to control your blood pressure.",
-//     "Be proactive in managing your health and seek medical attention if you experience any unusual symptoms."
-//   ]
-// };
-//
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false, // Disable the debug banner
-//       title: 'Health Buddy',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//         visualDensity: VisualDensity.adaptivePlatformDensity,
-//       ),
-//       // home: SuggestionPage(riskLevel: 'moderate', suggestions: suggestions,),
-//       home: LoadingPage()
-//     );
-//   }
-// }
