@@ -161,6 +161,15 @@ class MainMenuScreen extends StatelessWidget {
         title: Text('Health Buddy',
         ),
         backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            color: Colors.black,
+            onPressed: () {
+              _logout(context);
+            },
+          ),
+        ],
       ),
       drawer: SideBar(userId: id!, userEmail: email!,userName: name!),
       body: SafeArea(
@@ -212,15 +221,6 @@ class MainMenuScreen extends StatelessWidget {
                       _buildStatCard(title: 'Today Performance',value:  '0%',icon:  Icons.show_chart),
                       _buildStatCard(title: 'Calories Intake', value: '$caloriesIntake kcal', icon: Icons.restaurant,onTap: toCaloriesIntakePage),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _logout(context);
-                    },
-                    child: Text('Logout'),
                   ),
                 ),
               ],

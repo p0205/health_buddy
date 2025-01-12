@@ -73,6 +73,9 @@ class TodoController extends ChangeNotifier{
 
       await Future.delayed(Duration(seconds: 2));
       _todoRepository.generateTodo(user);
+
+      await Future.delayed(Duration(seconds: 8));
+      _loadingState = LoadingState.loaded;
       notifyListeners();
     } catch(e){
       _errorMessage = e.toString();
@@ -88,7 +91,6 @@ class TodoController extends ChangeNotifier{
 
       await Future.delayed(Duration(seconds: 2));
       _todoRepository.updateTodoTask(todoTask, date, user);
-      await Future.delayed(Duration(seconds: 1));
       var (a, b) = await _todoRepository.getTodoTasks(date, user.id.toString());
       _todo = a;
       _todoTasks = b;

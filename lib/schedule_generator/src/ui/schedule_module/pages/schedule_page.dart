@@ -5,6 +5,7 @@ import 'package:health_buddy/schedule_generator/src/core/enums/loading_state.dar
 import 'package:health_buddy/schedule_generator/src/ui/schedule_module/widget/create_task_form.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../commom_widgets/side_bar.dart';
 import '../widget/scrollable_timeline.dart';
 
 class SchedulePage extends StatefulWidget {
@@ -51,6 +52,7 @@ class _SchedulePageState extends State<SchedulePage> {
               appBar: AppBar(
                 title: const Text("Schedule"),
               ),
+              drawer: SideBar(userId: userController.user!.id, userEmail: userController.user!.email,userName: userController.user!.name),
               body: Center(
                 child: Text(userController.errorMessage),
               ),
@@ -61,6 +63,7 @@ class _SchedulePageState extends State<SchedulePage> {
               appBar: AppBar(
                 title: const Text("Schedule"),
               ),
+              drawer: SideBar(userId: userController.user!.id, userEmail: userController.user!.email,userName: userController.user!.name),
               body:
               Column(
                 children: [
