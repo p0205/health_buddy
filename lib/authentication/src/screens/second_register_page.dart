@@ -77,131 +77,144 @@ class _SecondRegisterPageState extends State<SecondRegisterPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Complete Registration')),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/BACKGROUND.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(30.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DefaultTextFormField(
-                  controller: _nameController,
-                  labelText: 'Name',
-                  prefixIcon: Icons.person,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  value: _selectedGender,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedGender = newValue;
-                    });
-                  },
-                  items: _genders.map<DropdownMenuItem<String>>((
-                      String gender) {
-                    return DropdownMenuItem<String>(
-                      value: gender,
-                      child: Text(gender),
-                    );
-                  }).toList(),
-                  decoration: InputDecoration(
-                    labelText: 'Gender',
-                    labelStyle: TextStyle(color: Colors.black),
-                    floatingLabelStyle: TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    prefixIcon: Icon(Icons.person_2, color: Colors.black),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select your gender';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                DefaultTextFormField(
-                  controller: _ageController,
-                  labelText: 'Age',
-                  prefixIcon: Icons.cake,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your age';
-                    } else if (int.tryParse(value) == null ||
-                        int.parse(value) < 18) {
-                      return 'Please enter a valid age (18 or older)';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                DefaultTextFormField(
-                  controller: _weightController,
-                  labelText: 'Weight (in kg)',
-                  prefixIcon: Icons.fitness_center,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your weight';
-                    } else if (double.tryParse(value) == null) {
-                      return 'Enter a valid number';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                DefaultTextFormField(
-                  controller: _heightController,
-                  labelText: 'Height (in cm)',
-                  prefixIcon: Icons.height,
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your height';
-                    } else if (double.tryParse(value) == null) {
-                      return 'Enter a valid number';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.0),
-                _isLoading
-                    ? LoadingIndicator()
-                    : DefaultButton(
-                  text: 'Register',
-                  onPressed: _toOtpPage,
-                ),
-              ],
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/BACKGROUND.png'),
+              fit: BoxFit.cover,
             ),
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: EdgeInsets.all(30.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          DefaultTextFormField(
+                            controller: _nameController,
+                            labelText: 'Name',
+                            prefixIcon: Icons.person,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your name';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          DropdownButtonFormField<String>(
+                            value: _selectedGender,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedGender = newValue;
+                              });
+                            },
+                            items: _genders.map<DropdownMenuItem<String>>(
+                                    (String gender) {
+                                  return DropdownMenuItem<String>(
+                                    value: gender,
+                                    child: Text(gender),
+                                  );
+                                }).toList(),
+                            decoration: InputDecoration(
+                              labelText: 'Gender',
+                              labelStyle: TextStyle(color: Colors.black),
+                              floatingLabelStyle: TextStyle(color: Colors.black),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              prefixIcon:
+                              Icon(Icons.person_2, color: Colors.black),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select your gender';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          DefaultTextFormField(
+                            controller: _ageController,
+                            labelText: 'Age',
+                            prefixIcon: Icons.cake,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your age';
+                              } else if (int.tryParse(value) == null ||
+                                  int.parse(value) < 18) {
+                                return 'Please enter a valid age (18 or older)';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          DefaultTextFormField(
+                            controller: _weightController,
+                            labelText: 'Weight (in kg)',
+                            prefixIcon: Icons.fitness_center,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your weight';
+                              } else if (double.tryParse(value) == null) {
+                                return 'Enter a valid number';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          DefaultTextFormField(
+                            controller: _heightController,
+                            labelText: 'Height (in cm)',
+                            prefixIcon: Icons.height,
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your height';
+                              } else if (double.tryParse(value) == null) {
+                                return 'Enter a valid number';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          _isLoading
+                              ? LoadingIndicator()
+                              : DefaultButton(
+                            text: 'Register',
+                            onPressed: _toOtpPage,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
     );
   }
+
 }
 
 

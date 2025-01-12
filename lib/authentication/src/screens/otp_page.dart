@@ -20,7 +20,7 @@ class OTPPage extends StatefulWidget {
     required this.height});
 
   @override
-  _OTPPageState createState() => _OTPPageState();
+  State<OTPPage> createState() => _OTPPageState();
 }
 
 
@@ -134,7 +134,7 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   Future<void> sendOtp(String email) async {
-    final url = Constants.BaseUrl + Constants.AunthenticationPort + '/send-otp'; // Change to your Laravel backend URL
+    final url = '${Constants.BaseUrl}${Constants.AunthenticationPort}/send-otp'; // Change to your Laravel backend URL
 
     try {
       final response = await http.post(
@@ -154,7 +154,7 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   Future<void> verifyOtp(String otp, String email) async {
-    final url = Constants.BaseUrl + Constants.AunthenticationPort + '/verify-otp'; // Change to your Laravel backend URL
+    final url = '${Constants.BaseUrl}${Constants.AunthenticationPort}/verify-otp'; // Change to your Laravel backend URL
 
     try {
       final response = await http.post(
@@ -214,6 +214,7 @@ class _OTPPageState extends State<OTPPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text("We have sent an OTP to ${widget.email}"),
             Text(
               'Enter OTP',
               style: TextStyle(
