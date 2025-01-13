@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_buddy/authentication/src/screens/main_menu_screen.dart';
+import 'package:health_buddy/meal_and_sport/src/calories_counter/calories_counter_main/screen/set_goal_calories_screen.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/user/blocs/user_bloc.dart';
 import '../../../../../commom_widgets/side_bar.dart';
@@ -23,13 +25,21 @@ class CaloriesCounterMainScreen extends StatefulWidget{
 class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
 
   @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<CaloriesCounterMainBloc>();
+    bloc.add(DateChangedEvent(date: DateTime.now()));
+    bloc.add(LoadInitialDataEvent());
+  }
+  @override
   Widget build(BuildContext context) {
+    bool dialogShown = false; // Flag to prevent multiple dialog triggers
+
     final userBloc = context.read<UserBloc>();
     final userId = userBloc.state.userId!;
     final name = userBloc.state.name;
     final email = userBloc.state.user!.email;
-
-
+    // Check if goal calories are null
           return MultiBlocProvider(
             providers: [
               BlocProvider.value(
@@ -37,7 +47,6 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
             ),
               ],
             child: Scaffold(
-
                 appBar: AppBar(
                   title: const Text("Calories Counter",textAlign: TextAlign.center),
                   backgroundColor: Colors.blueAccent,
@@ -51,9 +60,7 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                 body: SingleChildScrollView(
                   child: BlocBuilder<CaloriesCounterMainBloc,CaloriesCounterMainState>(
                     builder: (BuildContext context, CaloriesCounterMainState state) {
-                    if(widget.bloc.state.status == CaloriesCounterMainStatus.loading){
-                      return Center(child: CircularProgressIndicator());
-                    }else{
+                    if(context.read<CaloriesCounterMainBloc>().state.summary?.caloriesLeft != null){
                       final Map<String, List<UserMeal>?>? mealList = widget.bloc.state.mealList;
                       final MealSummary summary = widget.bloc.state.summary!;
                       return  Padding(
@@ -83,10 +90,10 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                                   ),
                                 ),
                                 !isToday ?
-                                  IconButton(
-                                    onPressed: () => _navigateDay(1),
-                                    icon: const Icon(Icons.chevron_right),
-                                  ) : const SizedBox(width: 48),
+                                IconButton(
+                                  onPressed: () => _navigateDay(1),
+                                  icon: const Icon(Icons.chevron_right),
+                                ) : const SizedBox(width: 48),
                               ],
                             ),
                             CaloriesChart(summary: summary),
@@ -117,7 +124,57 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                           ],
                         ),
                       );
+                    }else if (!dialogShown && context.read<CaloriesCounterMainBloc>().state.summary?.caloriesLeft == null) {
+                      dialogShown = true; // Mark the dialog as shown
+
+                      context.read<CaloriesCounterMainBloc>().add(NullGoalCaloriesEvent());
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        // Show the dialog after the frame completes
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => AlertDialog(
+                            title: const Text("Set Your Goal Calories"),
+                            content: const Text(
+                              "To use the Calories Counter, you need to set your daily goal calories. Would you like to set it now?",
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SetGoalCaloriesScreen(userId: userId),
+                                    ),
+                                  );
+                                },
+                                child: const Text("Set Now"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MainMenuScreen(),
+                                    ),
+                                  );
+                                },
+                                child: const Text("Not Now"),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+
+                      // Return an empty scaffold while the dialog is shown
+                      return const SizedBox();
                     }
+                    return Center(child: CircularProgressIndicator());
+
+
+
 
                     },
                   )
@@ -180,7 +237,8 @@ class CaloriesChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isExceed = summary.caloriesLeft.isNegative;
+    bool isExceed = summary.caloriesLeft!.isNegative;
+
     List<ChartData> nutritions = [];
     nutritions.add(ChartData(name: "Carbs", value: summary.carbsIntake, color: const Color.fromARGB(156, 232, 0, 0)));
 
@@ -196,7 +254,7 @@ class CaloriesChart extends StatelessWidget {
         columnLabel: "Intake amount (g)",
         containerHeight: 240,
 
-        centerText:  isExceed? "${summary.caloriesLeft.toStringAsFixed(2)} kcal\nexceed": "${summary.caloriesLeft.toStringAsFixed(2)} kcal\nremaining",
+        centerText:  isExceed? "${summary.caloriesLeft!.toStringAsFixed(2)} kcal\nexceed": "${summary.caloriesLeft!.toStringAsFixed(2)} kcal\nremaining",
 
         centerTextColor: isExceed? Colors.redAccent : null,
       ),

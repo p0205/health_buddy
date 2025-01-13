@@ -140,6 +140,10 @@ class MealApiProvider{
       throw GetNutritionalSummaryFailure();
     }
     final Map<String, dynamic> data = json.decode(response.body);
+    print("GET SUMMARY");
+    print("GET SUMMARY");
+    print(data.toString());
+    print(MealSummary.fromJson(data).caloriesLeft);
     return MealSummary.fromJson(data);
   }
 

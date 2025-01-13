@@ -115,7 +115,6 @@ class SideBar extends StatelessWidget {
                 final bloc = context.read<CaloriesCounterMainBloc>();
                 // final sportBloc = context.read<SportMainBloc>();
                 bloc.add(DateChangedEvent(date: DateTime.now()));
-                bloc.add(LoadInitialDataEvent());
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

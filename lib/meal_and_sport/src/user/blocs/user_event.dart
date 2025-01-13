@@ -41,4 +41,11 @@ class UploadProfileImageEvent extends UserEvent {
 }
 class UploadFileEvent extends UserEvent {}
 
+class UpdateGoalCaloriesEvent extends UserEvent {
+  final int userId;
+  final int goalCalories;
+  UpdateGoalCaloriesEvent(this.userId,this.goalCalories);
+}
+
+
 

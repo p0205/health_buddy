@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_buddy/authentication/src/screens/main_menu_screen.dart';
 import 'package:health_buddy/meal_and_sport/src/user/blocs/user_event.dart';
 import 'package:health_buddy/meal_and_sport/src/user/blocs/user_state.dart';
 
@@ -19,9 +19,9 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  late String initialName, initialAge, initialGender, initialWeight, initialHeight, initialArea;
+  late String initialName, initialAge, initialGoalCalories, initialGender, initialWeight, initialHeight, initialArea;
   late String initialFamilyMembers, initialOccupationType, initialWorkHours, initialHealthHistory;
-  late String name, age, gender, weight, height, area, familyMembers, occupationType, workHours, healthHistory;
+  late String name, age, goalCalories, gender, weight, height, area, familyMembers, occupationType, workHours, healthHistory;
   final ValueNotifier<bool> _hasChangesNotifier = ValueNotifier<bool>(false);
 
   @override
@@ -32,18 +32,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
     // Initialize the variables to avoid LateInitializationError
     name = user?.name ?? '';
+    goalCalories = user?.goalCalories.toString() ?? '';
     age = user?.age.toString() ?? '';
     gender = user?.gender ?? ''; // Use default value to prevent late initialization error
     weight = user?.weight.toString() ?? '';
     height = user?.height.toString() ?? '';
     area = user?.areaOfLiving ?? '';
-    familyMembers = user?.noOfFamilyMember.toString() ?? '';
+    familyMembers = user?.noOfFamilyMember?.toString() ?? '';
     occupationType = user?.occupationType ?? '';
     workHours = user?.occupationTime ?? '';
     healthHistory = user?.healthHistory ?? '';
 
     // Store initial values to compare with later
     initialName = name;
+    initialGoalCalories = goalCalories;
     initialAge = age;
     initialGender = gender;
     initialWeight = weight;
@@ -65,6 +67,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     void _updateHasChanges() {
       _hasChangesNotifier.value =
           name != initialName ||
+              goalCalories != initialGoalCalories ||
               age != initialAge ||
               gender != initialGender ||
               weight != initialWeight ||
@@ -108,6 +111,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         Map<String, dynamic> updatedData = {};
 
         if (name != initialName) updatedData['name'] = name;
+        if (goalCalories != initialGoalCalories) updatedData['goalCalories'] = goalCalories;
         if (age != initialName) updatedData['age'] = age;
         if (gender != initialGender) updatedData['gender'] = gender;
         if (weight != initialWeight) updatedData['weight'] = weight;
@@ -136,8 +140,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final userBloc = context.read<UserBloc>();
-    final userBlocState = userBloc.state;
-    final user = userBlocState.user;
 
     return BlocConsumer<UserBloc,UserState>(
       builder: (context, snapshot) {
@@ -146,6 +148,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           appBar: AppBar(
             title: const Text("Edit Profile"),
             backgroundColor: Colors.blue[600],
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () =>  Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => MainMenuScreen()),
+              )
+            ),
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -268,7 +277,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       _updateHasChanges();
                     },
                   ),
-
+                  TextFormField(
+                    initialValue: goalCalories,
+                    decoration: const InputDecoration(
+                      labelText: "Goal Calories Per Day (kcal)",
+                      hintText: "Enter your goal calories in whole number",
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null ||
+                          int.tryParse(value) == null ||
+                          int.parse(value) <= 0) {
+                        return "Please enter a valid calories in whole number.";
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      goalCalories = value;
+                      _updateHasChanges();
+                    },
+                  ),
                   // Area Field
                   TextFormField(
                     initialValue: area,

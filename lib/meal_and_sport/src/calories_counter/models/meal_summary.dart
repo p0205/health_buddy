@@ -1,6 +1,6 @@
 class MealSummary {
   final double caloriesIntake;
-  final double caloriesLeft;
+  final double? caloriesLeft;
   final double carbsIntake;
   final double proteinIntake;
   final double fatIntake;
@@ -8,7 +8,7 @@ class MealSummary {
 
   MealSummary({
     required this.caloriesIntake,
-    required this.caloriesLeft,
+    this.caloriesLeft,
     required this.carbsIntake,
     required this.proteinIntake,
     required this.fatIntake,
@@ -19,7 +19,7 @@ class MealSummary {
   factory MealSummary.fromJson(Map<String, dynamic> json) {
     return MealSummary(
       caloriesIntake: json['caloriesIntake']?.toDouble() ?? 0.0,
-      caloriesLeft: json['caloriesLeft']?.toDouble() ?? 0.0,
+      caloriesLeft: json['caloriesLeft']?.toDouble(),
       carbsIntake: json['carbsIntake']?.toDouble() ?? 0.0,
       proteinIntake: json['proteinIntake']?.toDouble() ?? 0.0,
       fatIntake: json['fatIntake']?.toDouble() ?? 0.0,

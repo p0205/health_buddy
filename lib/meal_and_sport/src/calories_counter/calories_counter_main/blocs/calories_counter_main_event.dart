@@ -40,4 +40,6 @@ class DateChangedEvent extends CaloriesCounterMainEvent{
   List<Object?> get props => [date];
 }
 
+class NullGoalCaloriesEvent extends CaloriesCounterMainEvent{}
+
 
