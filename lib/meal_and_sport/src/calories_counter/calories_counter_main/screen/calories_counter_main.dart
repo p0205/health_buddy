@@ -27,7 +27,7 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
     final userBloc = context.read<UserBloc>();
     final userId = userBloc.state.userId!;
     final name = userBloc.state.name;
-    final email = userBloc.state.email;
+    final email = userBloc.state.user!.email;
 
 
           return MultiBlocProvider(

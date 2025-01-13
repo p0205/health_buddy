@@ -23,7 +23,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       Emitter<UserState> emit,
       ) async {
     User user = await userRepository.fetchUser(event.userId);
-    emit(state.copyWith(userId : event.userId, email: user.email, name: user.name,token: event.token, isFirstLogin: event.isFirstLogin,status: UserStatus.userInfoLoaded, user: user));
+    emit(state.copyWith(userId : event.userId, name: user.name,token: event.token, isFirstLogin: event.isFirstLogin,status: UserStatus.userInfoLoaded, user: user));
 
   }
 

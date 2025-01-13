@@ -146,7 +146,7 @@ class MainMenuScreen extends StatelessWidget {
 
     final bloc = context.read<UserBloc>();
     final name = bloc.state.name;
-    final email = bloc.state.email;
+    final email = bloc.state.user!.email;
     final id = bloc.state.userId;
 
 

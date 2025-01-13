@@ -40,7 +40,7 @@ class _RiskMainScreenState extends State<RiskMainScreen> {
           ),
 
         ),
-        drawer: SideBar(userName: context.read<UserBloc>().state.name!, userEmail: context.read<UserBloc>().state.email!, userId: context.read<UserBloc>().state.userId!),
+        drawer: SideBar(userName: context.read<UserBloc>().state.name!, userEmail: context.read<UserBloc>().state.user!.email!, userId: context.read<UserBloc>().state.userId!),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: BlocBuilder<RiskBloc,RiskState>(

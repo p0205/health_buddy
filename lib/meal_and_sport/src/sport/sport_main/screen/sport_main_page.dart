@@ -24,7 +24,7 @@ class _SportMainPageState extends State<SportMainPage> {
     final userBloc = context.read<UserBloc>();
     final userId = userBloc.state.userId!;
     final name = userBloc.state.name;
-    final email = userBloc.state.email;
+    final email = userBloc.state.user!.email;
         return Scaffold(
             appBar: AppBar(
               title: const Text("Sport Summary",textAlign: TextAlign.center,),

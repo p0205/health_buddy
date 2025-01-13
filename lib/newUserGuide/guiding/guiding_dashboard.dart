@@ -33,7 +33,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
 
     final userBlocState = context.read<UserBloc>().state;
     final String username = userBlocState.name!;
-    final String email = userBlocState.email!;
+    final String email = userBlocState.user!.email!;
     final userId = userBlocState.userId;
     return ShowCaseWidget(
       builder: (context) => Stack(
