@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:health_buddy/meal_and_sport/src/calories_counter/repository/user_repository.dart';
+import '../../meal_and_sport/src/user/repo/user_repository.dart';
 
 
 part 'greeting_event.dart';

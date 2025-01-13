@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_buddy/meal_and_sport/src/sport/sport_main/screen/sport_main_page.dart';
+import 'package:health_buddy/meal_and_sport/src/user/screen/user_profile_screen.dart';
 import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
 import 'package:health_buddy/riskAssessment/src/screen/risk_main_screen.dart';
 
@@ -37,7 +40,19 @@ class SideBar extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
-              child: _buildUserProfileHeader(),
+              child: _buildUserProfileHeader(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: ()  {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfileScreen(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.home),
@@ -166,16 +181,16 @@ class SideBar extends StatelessWidget {
 
   }
 
-  Widget _buildUserProfileHeader() {
+  Widget _buildUserProfileHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
       child: Row(
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundImage: profileIcon != null
-                ? NetworkImage(profileIcon!) // Load image from URL
-                : const AssetImage('assets/images/USER_ICON.png') as ImageProvider, // Fallback to default image
+            backgroundImage: context.read<UserBloc>().state.user?.profileImage != null
+                ? MemoryImage(base64Decode(context.read<UserBloc>().state.user!.profileImage!))
+                : AssetImage("assets/images/USER_ICON.png"),
           ),
           const SizedBox(width: 16),
           Column(

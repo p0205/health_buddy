@@ -65,8 +65,12 @@ class RiskDataProvider{
 
     final uri = Uri.parse('$_baseUrl/ai/filter-questions/${userId.toString()}/${healthTestId.toString()}');
 
-      final response = await _httpClient.get(uri);
-      print("code::::");
+      // final response = await _httpClient.get(uri);
+    final response = await _httpClient.get(uri, headers: {
+      'Accept': 'application/json; charset=utf-8',
+    });
+
+    print("code::::");
       print(response.statusCode);
       if (response.statusCode == 200) {
         // Successful response, parse the data

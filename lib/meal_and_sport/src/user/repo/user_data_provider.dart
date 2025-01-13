@@ -2,8 +2,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:health_buddy/constants.dart' as Constants;
+
+import '../model/user.dart';
 
 
 class GetUserWeightFailure implements Exception{}
@@ -36,21 +39,47 @@ class UserDataProvider {
   // }
 
   //
-  // Future<User> fetchUser(int id) async {
-  //   try {
-  //     // Use string interpolation correctly
-  //     final uri = Uri.parse("$_baseUrl/$id");
-  //     final response = await _httpClient.get(uri);
-  //
-  //     if (response.statusCode == 200) {
-  //       return User.fromJson(json.decode(response.body));
-  //     } else {
-  //       throw Exception('Failed to load user: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
+  Future<User> fetchUser(int id) async {
+    try {
+      // Use string interpolation correctly
+      final uri = Uri.parse("$_baseUrl/user/$id");
+      final response = await _httpClient.get(uri);
+
+      if (response.statusCode == 200) {
+        return User.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to load user: ${response.statusCode}');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+  Future<void> updateProfile(int id, Map<String, dynamic> updatedData) async {
+
+    try {
+      final uri = Uri.parse('$_baseUrl/user/$id');
+      final response = await http.patch(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(updatedData),
+      );
+
+      if (response.statusCode == 200) {
+        // Parse and return the updated user data
+        return;
+      } else {
+        // Handle server errors
+        throw Exception('Failed to update profile: ${response.body}');
+      }
+    } catch (e) {
+      // Handle any network or parsing errors
+      throw Exception('Error updating profile: $e');
+    }
+  }
 
   Future<String> getUserWeight(int id) async {
     final uri = Uri.parse('$_baseUrl/user/${id.toString()}/weight');
@@ -90,4 +119,25 @@ class UserDataProvider {
       print('Error updating first login status: $error');
     }
   }
+
+  Future<String?> uploadProfileImage(File file, int userId) async{
+    final uri = Uri.parse('$_baseUrl/user/uploadProfileImage/${userId.toString()}');
+
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(file.path),
+    });
+    final dio = Dio();
+    final response = await dio.post(
+      uri.toString(),
+      data: formData,
+      onSendProgress: (int sent, int total) {
+      },);
+    if(response.statusCode == 200){
+      return response.data;
+    }else{
+      return null;
+    }
+  }
+
+
 }

@@ -19,7 +19,7 @@ class ReviewNutritionScreen extends StatefulWidget {
 }
 
 class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
-  // get the meal info from bloc
+  // get the meal info from blocs
 
   final _formKey = GlobalKey<FormState>();
 

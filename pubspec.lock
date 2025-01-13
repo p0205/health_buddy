@@ -65,7 +65,7 @@ packages:
   bloc:
     dependency: transitive
     description:
-      name: bloc
+      name: blocs
       sha256: "106842ad6569f0b60297619e9e0b1885c2fb9bf84812935490e6c5275777804e"
       url: "https://pub.dev"
     source: hosted

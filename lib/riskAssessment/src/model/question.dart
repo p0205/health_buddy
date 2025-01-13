@@ -15,6 +15,7 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       id: json['id'],
+
       question: json['question'],
       conditions: (json['conditions'] as List<dynamic>)
           .map((conditionJson) => Condition.fromJson(conditionJson))

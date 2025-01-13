@@ -1,9 +1,17 @@
 
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
+
+import '../model/user.dart';
+
+
 
 enum UserStatus{
   loading,
-  userInfoLoaded
+  userInfoLoaded,
+  fileUploaded,
+  failure
 }
 
 
@@ -16,6 +24,8 @@ class UserState extends Equatable {
   final String? token;
   final bool? isFirstLogin;
   final UserStatus status;
+  final User? user;
+  final File? file;
   const UserState( {
     this.userId,
     this.name,
@@ -23,11 +33,23 @@ class UserState extends Equatable {
     this.profileIcon,
     this.token,
     this.isFirstLogin,
-    this.status = UserStatus.loading
+    this.status = UserStatus.loading,
+    this.user,
+    this.file
   });
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [
+    userId,
+    email,
+    name,
+    profileIcon,
+    token,
+    isFirstLogin,
+    status,
+    user,
+    file
+  ];
 
   UserState copyWith ({
     final int? userId,
@@ -36,7 +58,9 @@ class UserState extends Equatable {
     final String? profileIcon,
     final String? token,
     final bool? isFirstLogin,
-    final UserStatus? status
+    final UserStatus? status,
+    final  User? user,
+    final File? file
   })
   {
     return UserState(
@@ -47,6 +71,8 @@ class UserState extends Equatable {
       token: token ?? this.token,
       isFirstLogin: isFirstLogin ?? this.isFirstLogin,
       status: status ?? this.status,
+      user: user ?? this.user,
+      file: file ?? this.file
     );
   }
 }
