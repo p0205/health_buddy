@@ -32,7 +32,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
     // Initialize the variables to avoid LateInitializationError
     name = user?.name ?? '';
-    goalCalories = user?.goalCalories.toString() ?? '';
+    goalCalories = user?.goalCalories?.toString() ?? '';
     age = user?.age.toString() ?? '';
     gender = user?.gender ?? ''; // Use default value to prevent late initialization error
     weight = user?.weight.toString() ?? '';

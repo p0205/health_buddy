@@ -53,7 +53,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
           Container(
             height: 160,
             decoration: const BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xFF599BF9),
             ),
             child: _buildUserProfileHeader(),
           ),
@@ -65,7 +65,14 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
               title: const Text('Home'),
             ),
           ),
-
+          Showcase(
+            key: _homeKey,
+            description: "Manage your profile here.",
+            child: ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+            ),
+          ),
           Showcase(
             key: _scheduleKey,
             description:"Check your dashboard to see your tasks, calories burned, meals, and progress all in one place!" ,
@@ -103,7 +110,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
             description: "Answer a quick health quiz, and we’ll help assess your risk for certain conditions.",
             child: ListTile(
               leading: const Icon(Icons.assessment),
-              title: const Text('Assessment'),
+              title: const Text('Risk Assessment'),
             ),
           ),
         ],

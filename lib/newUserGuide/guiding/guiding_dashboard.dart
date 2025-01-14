@@ -79,12 +79,12 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 50.0, bottom: 16.0),
+                          padding: const EdgeInsets.only(top: 35.0, bottom: 16.0),
                           child: Text(
-                            "My Dashboard",
+                            "Welcome Back, $username",
                             style: TextStyle(
                               fontFamily: 'Itim',
-                              fontSize: 30,
+                              fontSize: 25,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
@@ -94,11 +94,15 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                           radius: 100.0,
                           backgroundImage: AssetImage('assets/images/LOGO.png'),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Navigate to profile edit screen
-                          },
-                          child: Text('Edit Profile'),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Your Progress Today',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontFamily: 'Itim',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                         Expanded(
                           child: GridView.count(
@@ -148,15 +152,6 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(14.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // _logout(context);
-                            },
-                            child: Text('Logout'),
                           ),
                         ),
                       ],

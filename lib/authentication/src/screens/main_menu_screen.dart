@@ -115,14 +115,12 @@ class MainMenuScreen extends StatelessWidget {
             ),
             child: BlocBuilder<UserBloc,UserState>(
               builder: (context,state){
-                print("DASHBOARD");
-                print(context.read<UserBloc>().state.name);
                 return  Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
 
                     Padding(
-                      padding: const EdgeInsets.only(top: 50.0, bottom: 16.0), // Adjusted top padding
+                      padding: const EdgeInsets.only(top: 35.0, bottom: 16.0), // Adjusted top padding
                       child: Text(
                           "Welcome Back, ${context.read<UserBloc>().state.user?.name?.split(' ').first ?? 'User'}!",
                           style:  TextStyle(
@@ -145,6 +143,16 @@ class MainMenuScreen extends StatelessWidget {
                     //   },
                     //   child: Text('Edit Profile'),
                     // ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Your Progress Today',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontFamily: 'Itim',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
                     Expanded(
                       child: GridView.count(
                         crossAxisCount: 2,
