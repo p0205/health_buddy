@@ -147,7 +147,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           backgroundColor: Colors.white,
           appBar: AppBar(
             title: const Text("Edit Profile"),
-            backgroundColor: Colors.blue[600],
+            backgroundColor: Color(0xFF599BF9),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () =>  Navigator.pushReplacement(

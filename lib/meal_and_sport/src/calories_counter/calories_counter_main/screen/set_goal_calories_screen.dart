@@ -115,7 +115,7 @@ class _SetGoalCaloriesScreenState extends State<SetGoalCaloriesScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: const Text("Set Goal Calories"),
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: Color(0xFF599BF9),
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),

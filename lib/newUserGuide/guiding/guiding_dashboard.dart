@@ -42,7 +42,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
             key: _scaffoldKey,
             appBar: AppBar(
               title: Text('Health Buddy'),
-              backgroundColor: Colors.blue,
+              backgroundColor: Color(0xFF599BF9),
               leading: Showcase(
                 key: _sideBarKey,
                 description: "Your side bar is here.",

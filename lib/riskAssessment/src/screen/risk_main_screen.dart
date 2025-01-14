@@ -32,7 +32,7 @@ class _RiskMainScreenState extends State<RiskMainScreen> {
       return  Scaffold(
         appBar: AppBar(
           title: const Text("Risk Assessment",textAlign: TextAlign.center),
-          backgroundColor: Colors.blue,
+          backgroundColor: Color(0xFF599BF9),
           titleTextStyle: const TextStyle(
               fontFamily: 'Itim',
               fontSize: 25,

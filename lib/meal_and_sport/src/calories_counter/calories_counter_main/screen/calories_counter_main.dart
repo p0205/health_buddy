@@ -49,7 +49,7 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
             child: Scaffold(
                 appBar: AppBar(
                   title: const Text("Calories Counter",textAlign: TextAlign.center),
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: Color(0xFF599BF9),
                   titleTextStyle: const TextStyle(
                       fontFamily: 'Itim',
                       fontSize: 25,

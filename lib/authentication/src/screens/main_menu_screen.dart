@@ -1,23 +1,21 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:health_buddy/authentication/src/screens/splash_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:restart_app/restart_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../newUserGuide/greeting/greeting.dart';
 import '../../../commom_widgets/side_bar.dart';
 import '../../../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
 import '../../../meal_and_sport/src/calories_counter/calories_counter_main/screen/calories_counter_main.dart';
-import '../../../meal_and_sport/src/calories_counter/search_meal/blocs/search_meal_bloc.dart';
-import '../../../meal_and_sport/src/sport/search_sport/bloc/search_sport_bloc.dart';
 import '../../../meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import '../../../meal_and_sport/src/sport/sport_main/screen/sport_main_page.dart';
 import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
-import '../../../newUserGuide/greeting/greeting_bloc.dart';
-import 'login_screen.dart';
 import 'package:health_buddy/constants.dart' as Constants;
+
+import '../../../meal_and_sport/src/user/blocs/user_state.dart';
 
 // Reusable Popup Dialog Function
 void showPopupDialog(BuildContext context, String message, {VoidCallback? onOkPressed}) {
@@ -47,61 +45,6 @@ class MainMenuScreen extends StatelessWidget {
 
   // Constructor to receive the token
   const MainMenuScreen({super.key});
-
-  Future<void> _logout(BuildContext context) async {
-    try {
-      final token = context.read<UserBloc>().state.token!;
-      final url = Uri.parse(Constants.BaseUrl + Constants.AunthenticationPort + '/logout'); // Replace with your backend logout URL
-
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
-      final prefs = await SharedPreferences.getInstance();
-      if (response.statusCode == 200) {
-        if (prefs.getBool('rememberMe') == false) {
-          // Clear all stored data
-          await prefs.clear();
-        } else {
-          // Clear only the token
-          final email = prefs.getString('email');
-          await prefs.setString('email', email!);
-          await prefs.setBool('rememberMe', true);
-        }
-
-        // Optionally, clear any other session data or token if needed
-        // You can also clear the token here if you're storing it in SharedPreferences
-        // await prefs.remove('token');
-
-        // Logout successful
-        showPopupDialog(
-          context,
-          'Logged out successfully',
-          onOkPressed: () {
-            Restart.restartApp(
-            );
-          },
-        );
-      } else {
-        // Handle logout failure
-        showPopupDialog(
-          context,
-          'Logout failed',
-        );
-      }
-    } catch (e) {
-      // Handle connection errors
-      showPopupDialog(
-        context,
-        'An error occurred: $e',
-      );
-    }
-
-  }
-
   @override
   Widget build(BuildContext context) {
 
@@ -141,12 +84,7 @@ class MainMenuScreen extends StatelessWidget {
       );
     }
 
-
-
-
     final bloc = context.read<UserBloc>();
-    final name = bloc.state.name;
-    final email = bloc.state.user!.email;
     final id = bloc.state.userId;
 
 
@@ -159,11 +97,11 @@ class MainMenuScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Health Buddy',
-        ),
-        backgroundColor: Colors.blue,
+          title: Text('Health Buddy',),
+          backgroundColor: Color(0xFF599BF9)
+
       ),
-      drawer: SideBar(userId: id!, userEmail: email!,userName: name!),
+      drawer: SideBar(userId: id!, userEmail: context.read<UserBloc>().state.user!.email!,userName: context.read<UserBloc>().state.name!),
       body: SafeArea(
         child: Stack(
           children: [Container(
@@ -175,56 +113,65 @@ class MainMenuScreen extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+            child: BlocBuilder<UserBloc,UserState>(
+              builder: (context,state){
+                print("DASHBOARD");
+                print(context.read<UserBloc>().state.name);
+                return  Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
 
-                Padding(
-                  padding: const EdgeInsets.only(top: 50.0, bottom: 16.0), // Adjusted top padding
-                  child: Text(
-                      "My Dashboard",
-                      style:  TextStyle(
-                        fontFamily: 'Itim',
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50.0, bottom: 16.0), // Adjusted top padding
+                      child: Text(
+                          "Welcome Back, ${context.read<UserBloc>().state.user?.name?.split(' ').first ?? 'User'}!",
+                          style:  TextStyle(
+                            fontFamily: 'Itim',
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center
                       ),
-                      textAlign: TextAlign.center
-                  ),
-                ),
-                CircleAvatar(
-                  radius: 100.0,
-                  backgroundImage: AssetImage('assets/images/LOGO.png'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Navigate to profile edit screen
-                  },
-                  child: Text('Edit Profile'),
-                ),
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    padding: EdgeInsets.all(16.0),
-                    children: [
-                      _buildStatCard(title: 'Task Completed',value:  '0', icon: Icons.task_alt),
-                      _buildStatCard(title: 'Calories Burned',value:  '$caloriesBurnt kcal', icon: Icons.local_fire_department,onTap: toCaloriesBurntPage),
-                      _buildStatCard(title: 'Today Performance',value:  '0%',icon:  Icons.show_chart),
-                      _buildStatCard(title: 'Calories Intake', value: '$caloriesIntake kcal', icon: Icons.restaurant,onTap: toCaloriesIntakePage),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _logout(context);
-                    },
-                    child: Text('Logout'),
-                  ),
-                ),
-              ],
+                    ),
+                    CircleAvatar(
+                      radius: 100.0,
+                      backgroundImage: context.read<UserBloc>().state.user?.profileImage != null
+                          ? MemoryImage(base64Decode(context.read<UserBloc>().state.user!.profileImage!))
+                          : AssetImage("assets/images/USER_ICON.png"),
+                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     // Navigate to profile edit screen
+                    //   },
+                    //   child: Text('Edit Profile'),
+                    // ),
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        padding: EdgeInsets.all(16.0),
+                        children: [
+                          _buildStatCard(title: 'Task Completed',value:  '0', icon: Icons.task_alt),
+                          _buildStatCard(title: 'Calories Burned',value:  '$caloriesBurnt kcal', icon: Icons.local_fire_department,onTap: toCaloriesBurntPage),
+                          _buildStatCard(title: 'Today Performance',value:  '0%',icon:  Icons.show_chart),
+                          _buildStatCard(title: 'Calories Intake', value: '$caloriesIntake kcal', icon: Icons.restaurant,onTap: toCaloriesIntakePage),
+                        ],
+                      ),
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(16.0),
+                    //   child: ElevatedButton(
+                    //     onPressed: () {
+                    //       _logout(context);
+                    //     },
+                    //     child: Text('Logout'),
+                    //   ),
+                    // ),
+                  ],
+                );
+              }
+
             ),
           ),
             // BlocBuilder<GreetingBloc, GreetingState>(

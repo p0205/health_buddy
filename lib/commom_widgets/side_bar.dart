@@ -6,6 +6,11 @@ import 'package:health_buddy/meal_and_sport/src/sport/sport_main/screen/sport_ma
 import 'package:health_buddy/meal_and_sport/src/user/screen/user_profile_screen.dart';
 import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
 import 'package:health_buddy/riskAssessment/src/screen/risk_main_screen.dart';
+import 'package:restart_app/restart_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:health_buddy/constants.dart' as Constants;
+import 'package:http/http.dart' as http;
 
 
 import '../authentication/src/screens/main_menu_screen.dart';
@@ -28,6 +33,62 @@ class SideBar extends StatelessWidget {
     this.profileIcon, required this.userId,
   });
 
+  Future<void> _logout(BuildContext context) async {
+    try {
+      final token = context.read<UserBloc>().state.token!;
+      final url = Uri.parse('${Constants.BaseUrl}${Constants.AunthenticationPort}/logout'); // Replace with your backend logout URL
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+      final prefs = await SharedPreferences.getInstance();
+      if (response.statusCode == 200) {
+        if (prefs.getBool('rememberMe') == false) {
+          // Clear all stored data
+          await prefs.clear();
+        } else {
+          // Clear only the token
+          final email = prefs.getString('email');
+          await prefs.setString('email', email!);
+          await prefs.setBool('rememberMe', true);
+        }
+
+            Restart.restartApp();
+        // Optionally, clear any other session data or token if needed
+        // You can also clear the token here if you're storing it in SharedPreferences
+        // await prefs.remove('token');
+
+        // Logout successful
+        // showPopupDialog(
+        //   context,
+        //   'Logged out successfully',
+        //   onOkPressed: () {
+        //     Restart.restartApp(
+        //     );
+        //   },
+        // );
+      } else {
+        // Handle logout failure
+        showPopupDialog(
+          context,
+          'Logout failed',
+        );
+      }
+    } catch (e) {
+      // Handle connection errors
+      showPopupDialog(
+        context,
+        'An error occurred: $e',
+      );
+    }
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -38,22 +99,11 @@ class SideBar extends StatelessWidget {
             Container(
               height: 160,
               decoration: const BoxDecoration(
-                color: Colors.blue,
+                color: Color(0xFF599BF9)
               ),
               child: _buildUserProfileHeader(context),
             ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
-              onTap: ()  {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserProfileScreen(),
-                  ),
-                );
-              },
-            ),
+
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
@@ -89,6 +139,18 @@ class SideBar extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => MainMenuScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+              onTap: ()  {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfileScreen(),
                   ),
                 );
               },
@@ -174,9 +236,40 @@ class SideBar extends StatelessWidget {
                 );
               },
             ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Confirm Logout'),
+                    content: const Text('Are you sure you want to log out?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          // Close the dialog without logging out
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          _logout(context);
+                        },
+                        child: const Text('Logout'),
+                      ),
+                    ],
+                  ),
+                );
+
+              },
+            ),
           ],
         ),
               );
+
 
   }
 
@@ -197,7 +290,7 @@ class SideBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                userName,
+                context.read<UserBloc>().state.user!.name!,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -206,7 +299,7 @@ class SideBar extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                userEmail,
+                context.read<UserBloc>().state.user!.email!,
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,

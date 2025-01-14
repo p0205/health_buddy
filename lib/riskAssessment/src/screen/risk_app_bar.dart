@@ -47,6 +47,7 @@ class RiskAppBar extends StatelessWidget implements PreferredSizeWidget {
           elevation: 0,
           leading: leading,
           title: const SurveyProgress(),
+          backgroundColor: Color(0xFF599BF9),
           // actions: [
           //   cancelButton,
           // ],

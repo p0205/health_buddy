@@ -27,8 +27,6 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
   @override
   Widget build(BuildContext context) {
 
-    print("ENTER SUGGESTION SCREEN");
-    print(context.read<RiskBloc>().state.healthTestSelected);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -37,7 +35,7 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
             fontWeight: FontWeight.bold
           ),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF599BF9),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {

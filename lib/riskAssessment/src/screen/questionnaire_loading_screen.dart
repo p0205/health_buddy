@@ -72,7 +72,7 @@ class _SuggestionLoadingScreenState extends State<SuggestionLoadingScreen> with 
               fontWeight: FontWeight.bold
           ),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF599BF9),
       ),
       body: Center(
         child: Column(
