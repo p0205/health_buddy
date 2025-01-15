@@ -6,6 +6,8 @@ import 'package:health_buddy/riskAssessment/src/screen/risk_questionnaire_screen
 import 'package:health_buddy/riskAssessment/src/screen/suggestion_loading_screen.dart';
 
 import '../../../authentication/src/screens/main_menu_screen.dart';
+import '../../../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
+import '../../../meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
 
 class SuggestionScreen extends StatefulWidget {
@@ -256,39 +258,12 @@ class _SuggestionScreenState extends State<SuggestionScreen> {
   Widget _buildActionButton(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MainMenuScreen(),
-                ),
-              );
-            },
-            child: const Text(
-              "Go to Dashboard",
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white
-              ),
-            ),
-          ),
-        ),
         const SizedBox(height: 12), // Spacing between buttons
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
+              backgroundColor: Colors.blueAccent,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),

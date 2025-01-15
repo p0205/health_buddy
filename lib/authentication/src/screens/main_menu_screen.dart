@@ -40,11 +40,29 @@ void showPopupDialog(BuildContext context, String message, {VoidCallback? onOkPr
   );
 }
 
-class MainMenuScreen extends StatelessWidget {
-
+class MainMenuScreen extends StatefulWidget {
 
   // Constructor to receive the token
   const MainMenuScreen({super.key});
+
+  @override
+  State<MainMenuScreen> createState() => _MainMenuScreenState();
+}
+
+class _MainMenuScreenState extends State<MainMenuScreen> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    // Trigger loading events
+    print("Initstate of main page");
+
+    context.read<CaloriesCounterMainBloc>().add(DateChangedEvent(date: DateTime.now()));
+    context.read<SportMainBloc>().add(SportDateChangedEvent(date: DateTime.now()));
+    print(context.read<CaloriesCounterMainBloc>().state.status);
+    print(context.read<SportMainBloc>().state.status);
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -153,19 +171,44 @@ class MainMenuScreen extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        padding: EdgeInsets.all(16.0),
-                        children: [
-                          _buildStatCard(title: 'Task Completed',value:  '0', icon: Icons.task_alt),
-                          _buildStatCard(title: 'Calories Burned',value:  '$caloriesBurnt kcal', icon: Icons.local_fire_department,onTap: toCaloriesBurntPage),
-                          _buildStatCard(title: 'Today Performance',value:  '0%',icon:  Icons.show_chart),
-                          _buildStatCard(title: 'Calories Intake', value: '$caloriesIntake kcal', icon: Icons.restaurant,onTap: toCaloriesIntakePage),
-                        ],
-                      ),
+                      BlocBuilder<CaloriesCounterMainBloc, CaloriesCounterMainState>(
+                      builder: (context, caloriesState) {
+                          print("Calories status");
+                          print(caloriesState.status);
+                          return BlocBuilder<SportMainBloc, SportMainState>(
+                          builder: (context, sportState) {
+                          print("Sport status");
+                          print(sportState.status);
+                            if(caloriesState.status == CaloriesCounterMainStatus.mealListLoaded && (sportState.status == SportMainStatus.sportListLoaded|| sportState.status == SportMainStatus.noRecordFound)) {
+                              return Expanded(
+                                child: GridView.count(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  padding: EdgeInsets.all(16.0),
+                                  children: [
+                                    _buildStatCard(title: 'Task Completed',
+                                        value: '0',
+                                        icon: Icons.task_alt),
+                                    _buildStatCard(title: 'Calories Burned',
+                                        value: '$caloriesBurnt kcal',
+                                        icon: Icons.local_fire_department,
+                                        onTap: toCaloriesBurntPage),
+                                    _buildStatCard(title: 'Today Performance',
+                                        value: '0%',
+                                        icon: Icons.show_chart),
+                                    _buildStatCard(title: 'Calories Intake',
+                                        value: '$caloriesIntake kcal',
+                                        icon: Icons.restaurant,
+                                        onTap: toCaloriesIntakePage),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                        );
+                      }
                     ),
                     // Padding(
                     //   padding: const EdgeInsets.all(16.0),
@@ -253,7 +296,5 @@ class MainMenuScreen extends StatelessWidget {
       ),
     );
   }
-
-
 }
 

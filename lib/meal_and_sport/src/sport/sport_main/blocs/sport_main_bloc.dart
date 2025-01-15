@@ -24,7 +24,7 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
       SportDateChangedEvent event,
       Emitter<SportMainState> emit
       )async{
-    emit(state.copyWith(date: event.date));
+    emit(state.copyWith(status: SportMainStatus.loading, date: event.date));
     add(LoadUserSportList());
   }
 
