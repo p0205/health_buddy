@@ -75,7 +75,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
           ),
           Showcase(
             key: _scheduleKey,
-            description:"Check your dashboard to see your tasks, calories burned, meals, and progress all in one place!" ,
+            description:"Generate personalized daily schedules using AI." ,
             child: ListTile(
               leading: const Icon(Icons.calendar_today),
               title: const Text('Schedule'),
