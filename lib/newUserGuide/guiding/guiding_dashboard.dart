@@ -81,7 +81,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                         Padding(
                           padding: const EdgeInsets.only(top: 35.0, bottom: 16.0),
                           child: Text(
-                            "Welcome Back, $username",
+                            "Welcome Back, ${context.read<UserBloc>().state.user?.name?.split(' ').first ?? 'User'}!",
                             style: TextStyle(
                               fontFamily: 'Itim',
                               fontSize: 25,

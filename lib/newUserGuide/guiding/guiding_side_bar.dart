@@ -26,6 +26,7 @@ class GuidingSideBarWidget extends StatefulWidget {
 class _GuidingSideBarState extends State<GuidingSideBarWidget> {
 
   final GlobalKey _homeKey = GlobalKey();
+  final GlobalKey _profileKey = GlobalKey();
   final GlobalKey _scheduleKey = GlobalKey();
   final GlobalKey _calsIntakeKey = GlobalKey();
   final GlobalKey _calsBurntKey = GlobalKey();
@@ -38,7 +39,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
     //Start showcase view after current widget frames are drawn.
     WidgetsBinding.instance.addPostFrameCallback(
           (_) => ShowCaseWidget.of(context).startShowCase(
-          [_homeKey, _scheduleKey, _calsIntakeKey, _calsBurntKey, _performanceKey, _assessmentKey]),
+          [_homeKey, _profileKey, _scheduleKey, _calsIntakeKey, _calsBurntKey, _performanceKey, _assessmentKey]),
     );
   }
 
@@ -66,7 +67,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
             ),
           ),
           Showcase(
-            key: _homeKey,
+            key: _profileKey,
             description: "Manage your profile here.",
             child: ListTile(
               leading: const Icon(Icons.person),

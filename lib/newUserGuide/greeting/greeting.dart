@@ -26,7 +26,7 @@ class GreetingOverlay extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Hi, $userName! 👋",
+                    "Hi, ${userName.split(' ').first}! 👋",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -35,7 +35,7 @@ class GreetingOverlay extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Welcome to Health Buddy! Health Buddy is your personal companion to achieve your health goals. Let's get started by setting up your profile!",
+                    "Welcome to Health Buddy! Health Buddy is your personal companion to achieve your health goals. Let's get started!",
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
