@@ -45,8 +45,6 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
   @override
   Widget build(BuildContext context) {
     final model = BlocProvider.of<SearchFoodBloc>(context);
-    print("SEARCHHHHHH");
-    print(model.state.status);
     return SearchAnchor(
       searchController: _searchController,
       builder: (context, controller) {
@@ -57,16 +55,12 @@ class _DebouncedSearchBarState extends State<DebouncedSearchBar> {
           hintText: "Search for a food",
           onTap: () {
             final model = BlocProvider.of<SearchFoodBloc>(context);
-            print("SEARCHHHHHH2222");
-            print(model.state.status);
             controller.openView();
           },
         );
       },
       suggestionsBuilder: (BuildContext context, controller) async {
         final bloc = context.read<SearchFoodBloc>();
-        print("SEARCHHHHHH333333");
-        print(bloc.state.status);
         bloc.add(SearchQueryChanged(query: controller.text));
         return [
           BlocConsumer<SearchFoodBloc, SearchFoodState>(

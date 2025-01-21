@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../calories_counter/repository/user_repository.dart';
+import '../../../user/repo/user_repository.dart';
 import '../../sport_models/sport.dart';
 import '../../sport_repository/sport_repository.dart';
 

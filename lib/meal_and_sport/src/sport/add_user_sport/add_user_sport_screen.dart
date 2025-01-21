@@ -25,7 +25,7 @@ class AddUserSportScreen extends StatelessWidget{
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Sport'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Color(0xFF599BF9),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

@@ -26,6 +26,7 @@ class GuidingSideBarWidget extends StatefulWidget {
 class _GuidingSideBarState extends State<GuidingSideBarWidget> {
 
   final GlobalKey _homeKey = GlobalKey();
+  final GlobalKey _profileKey = GlobalKey();
   final GlobalKey _scheduleKey = GlobalKey();
   final GlobalKey _calsIntakeKey = GlobalKey();
   final GlobalKey _calsBurntKey = GlobalKey();
@@ -38,7 +39,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
     //Start showcase view after current widget frames are drawn.
     WidgetsBinding.instance.addPostFrameCallback(
           (_) => ShowCaseWidget.of(context).startShowCase(
-          [_homeKey, _scheduleKey, _calsIntakeKey, _calsBurntKey, _performanceKey, _assessmentKey]),
+          [_homeKey, _profileKey, _scheduleKey, _calsIntakeKey, _calsBurntKey, _performanceKey, _assessmentKey]),
     );
   }
 
@@ -53,7 +54,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
           Container(
             height: 160,
             decoration: const BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xFF599BF9),
             ),
             child: _buildUserProfileHeader(),
           ),
@@ -65,10 +66,17 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
               title: const Text('Home'),
             ),
           ),
-
+          Showcase(
+            key: _profileKey,
+            description: "Manage your profile here.",
+            child: ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profile'),
+            ),
+          ),
           Showcase(
             key: _scheduleKey,
-            description:"Check your dashboard to see your tasks, calories burned, meals, and progress all in one place!" ,
+            description:"Generate personalized daily schedules using AI." ,
             child: ListTile(
               leading: const Icon(Icons.calendar_today),
               title: const Text('Schedule'),
@@ -103,7 +111,7 @@ class _GuidingSideBarState extends State<GuidingSideBarWidget> {
             description: "Answer a quick health quiz, and we’ll help assess your risk for certain conditions.",
             child: ListTile(
               leading: const Icon(Icons.assessment),
-              title: const Text('Assessment'),
+              title: const Text('Risk Assessment'),
             ),
           ),
         ],

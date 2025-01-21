@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 abstract class UserEvent extends Equatable {
@@ -19,3 +21,31 @@ class LoginSuccessEvent extends UserEvent {
 }
 
 class LoginReset extends UserEvent {}
+
+
+class LoadUserProfileEvent extends UserEvent{
+  final int userId;
+  LoadUserProfileEvent(this.userId);
+}
+
+class UpdateProfileEvent extends UserEvent {
+  final int userId;
+  final Map<String, dynamic> updatedData;
+  UpdateProfileEvent(this.userId,this.updatedData);
+}
+
+class UploadProfileImageEvent extends UserEvent {
+  final File file;
+  final int userId;
+  UploadProfileImageEvent(this.file,this.userId);
+}
+class UploadFileEvent extends UserEvent {}
+
+class UpdateGoalCaloriesEvent extends UserEvent {
+  final int userId;
+  final int goalCalories;
+  UpdateGoalCaloriesEvent(this.userId,this.goalCalories);
+}
+
+
+

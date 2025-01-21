@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                GuidingDashboard(username: context.read<UserBloc>().state.name!,token: token,)
+                GuidingDashboard(username: context.read<UserBloc>().state.name!)
           ),
         );
       }else{
@@ -171,9 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     value: context.read<CaloriesCounterMainBloc>(),
                   ),
                 ],
-                child: MainMenuScreen(
-                  token: token,
-                ),
+                child: MainMenuScreen(),
               ),
             ),
           );

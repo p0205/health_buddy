@@ -42,7 +42,7 @@ class FoodDetailsPage extends StatelessWidget{
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Add Food'),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Color(0xFF599BF9),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             iconSize: 30.0,

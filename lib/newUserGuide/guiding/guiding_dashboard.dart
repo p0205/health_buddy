@@ -13,8 +13,7 @@ import 'guiding_side_bar.dart';
 
 class GuidingDashboard extends StatefulWidget {
   final String username;
-  final String token;
-  const GuidingDashboard({super.key, required this.username,required this.token});
+  const GuidingDashboard({super.key, required this.username});
 
   @override
   State<GuidingDashboard> createState() => _GuidingDashboardState();
@@ -34,7 +33,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
 
     final userBlocState = context.read<UserBloc>().state;
     final String username = userBlocState.name!;
-    final String email = userBlocState.email!;
+    final String email = userBlocState.user!.email!;
     final userId = userBlocState.userId;
     return ShowCaseWidget(
       builder: (context) => Stack(
@@ -43,7 +42,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
             key: _scaffoldKey,
             appBar: AppBar(
               title: Text('Health Buddy'),
-              backgroundColor: Colors.blue,
+              backgroundColor: Color(0xFF599BF9),
               leading: Showcase(
                 key: _sideBarKey,
                 description: "Your side bar is here.",
@@ -80,12 +79,12 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 50.0, bottom: 16.0),
+                          padding: const EdgeInsets.only(top: 35.0, bottom: 16.0),
                           child: Text(
-                            "My Dashboard",
+                            "Welcome Back, ${context.read<UserBloc>().state.user?.name?.split(' ').first ?? 'User'}!",
                             style: TextStyle(
                               fontFamily: 'Itim',
-                              fontSize: 30,
+                              fontSize: 25,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.center,
@@ -95,11 +94,15 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                           radius: 100.0,
                           backgroundImage: AssetImage('assets/images/LOGO.png'),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Navigate to profile edit screen
-                          },
-                          child: Text('Edit Profile'),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Your Progress Today',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontFamily: 'Itim',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                         Expanded(
                           child: GridView.count(
@@ -151,15 +154,6 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(14.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // _logout(context);
-                            },
-                            child: Text('Logout'),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -203,9 +197,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                   value: context.read<CaloriesCounterMainBloc>(),
                 ),
               ],
-              child: MainMenuScreen(
-                token: widget.token, // Replace with the actual token
-              ),
+              child: MainMenuScreen(),
             ),
           ),
         );

@@ -8,8 +8,11 @@ import 'package:health_buddy/meal_and_sport/src/sport/sport_main/blocs/sport_mai
 import 'package:health_buddy/newUserGuide/guiding/guiding_dashboard.dart';
 import 'package:health_buddy/performance_analysis/controllers/performance_controller.dart';
 import 'package:health_buddy/performance_analysis/repositories/performance_repository.dart';
+import 'package:health_buddy/riskAssessment/src/blocs/risk_bloc.dart';
+import 'package:health_buddy/riskAssessment/src/screen/risk_main_screen.dart';
 import 'package:health_buddy/schedule_generator/src/main.dart';
 import 'package:provider/provider.dart';
+
 
 
 import 'authentication/src/screens/splash_screen.dart';
@@ -77,7 +80,6 @@ void main() {
           Provider(
             create: (context) => UserRepository(),
           ),
-          Provider(create: (_) => PerformanceRepository()),
           ChangeNotifierProvider(
             create: (context) => TodoController(
               context.read<TodoRepository>(),
@@ -88,6 +90,10 @@ void main() {
               context.read<UserRepository>(),
             ),
           ),
+          BlocProvider<RiskBloc>(
+            create: (context) => RiskBloc(),
+          ),
+          Provider(create: (_) => PerformanceRepository()),
           ChangeNotifierProxyProvider<PerformanceRepository, PerformanceController>(
             create: (context) => PerformanceController(context.read<PerformanceRepository>()),
             update: (context, repository, controller) => controller!..updateRepository(repository),

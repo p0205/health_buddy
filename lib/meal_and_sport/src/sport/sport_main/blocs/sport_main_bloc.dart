@@ -24,7 +24,7 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
       SportDateChangedEvent event,
       Emitter<SportMainState> emit
       )async{
-    emit(state.copyWith(date: event.date));
+    emit(state.copyWith(status: SportMainStatus.loading, date: event.date));
     add(LoadUserSportList());
   }
 
@@ -52,7 +52,7 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
     if(sportList.isNotEmpty){
       emit(state.copyWith(status: SportMainStatus.sportListLoaded, sportList: sportList, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
     }else{
-      emit(state.copyWith(status: SportMainStatus.noRecordFound, dateString: sportSummary.date.toString().split(' ')[0]));
+      emit(state.copyWith(status: SportMainStatus.noRecordFound, sportSummary: sportSummary, dateString: sportSummary.date.toString().split(' ')[0]));
     }
   }
 
@@ -69,6 +69,7 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
     }else{
       emit(state.copyWith(status: SportMainStatus.noRecordFound, dateString: sportSummary.date.toString().split(' ')[0]));
     }
+    add(LoadUserSportList());
   }
 
   Future<void> _delete(
@@ -84,6 +85,7 @@ class SportMainBloc extends Bloc<SportMainEvent,SportMainState>{
     }else{
       emit(state.copyWith(status: SportMainStatus.noRecordFound, dateString: sportSummary.date.toString().split(' ')[0]));
     }
+    add(LoadUserSportList());
   }
 }
 

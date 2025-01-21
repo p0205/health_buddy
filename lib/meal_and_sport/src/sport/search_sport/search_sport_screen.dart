@@ -21,7 +21,7 @@ class SearchSportScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Sport'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Color(0xFF599BF9),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),

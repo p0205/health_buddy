@@ -35,14 +35,26 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
           .fetchTodoTasks(widget.date, widget.user.id.toString());
     });
   }
-
+  //
+  // @override
+  // void didUpdateWidget(covariant ScrollableTimeline oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   if (oldWidget.date != widget.date|| oldWidget.user.id != widget.user.id) {
+  //     Provider.of<TodoController>(context, listen: false).fetchTodoTasks(widget.date, widget.user.id.toString());
+  //   }
+  // }
   @override
   void didUpdateWidget(covariant ScrollableTimeline oldWidget) {
+    print("didUpdateWidget");
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.date != widget.date|| oldWidget.user.id != widget.user.id) {
-      Provider.of<TodoController>(context, listen: false).fetchTodoTasks(widget.date, widget.user.id.toString());
+    if (oldWidget.date != widget.date || oldWidget.user.id != widget.user.id) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<TodoController>(context, listen: false)
+            .fetchTodoTasks(widget.date, widget.user.id.toString());
+      });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -304,26 +316,30 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
-          trailing: Checkbox(
-            value: todoTask.isComplete,
-            onChanged: (value) {
-              if (todoTask.isComplete == true) {
-                todoTask.isComplete = false;
-              } else {
-                todoTask.isComplete = true;
-              }
-              final updatedTask = TodoTask(
-                id: todoTask.id,
-                title: todoTask.title,
-                description: todoTask.description,
-                startTime: todoTask.startTime,
-                endTime: todoTask.endTime,
-                isComplete: todoTask.isComplete,
-                type: todoTask.type,
-              );
-              Provider.of<TodoController>(context, listen: false)
-                  .updateTodoTask(updatedTask, this.widget.date, this.widget.user);
-            },
+          trailing: Container(
+            width: 1,
+            height: 1,
+            child: Checkbox(
+              value: todoTask.isComplete,
+              onChanged: (value) {
+                if (todoTask.isComplete == true) {
+                  todoTask.isComplete = false;
+                } else {
+                  todoTask.isComplete = true;
+                }
+                final updatedTask = TodoTask(
+                  id: todoTask.id,
+                  title: todoTask.title,
+                  description: todoTask.description,
+                  startTime: todoTask.startTime,
+                  endTime: todoTask.endTime,
+                  isComplete: todoTask.isComplete,
+                  type: todoTask.type,
+                );
+                Provider.of<TodoController>(context, listen: false)
+                    .updateTodoTask(updatedTask, this.widget.date, this.widget.user);
+              },
+            ),
           ),
         ),
       ),

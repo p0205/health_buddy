@@ -7,7 +7,8 @@ enum CaloriesCounterMainStatus{
   mealListLoaded,
   mealListReloaded,
   addMealBtnClicked,
-  mealDeleted
+  mealDeleted,
+  goalCaloriesNotFound
 }
 
 class CaloriesCounterMainState extends Equatable{

@@ -30,7 +30,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
     final bloc = context.read<AddMealBloc>();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF599BF9),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),

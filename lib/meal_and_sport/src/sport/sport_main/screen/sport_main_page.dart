@@ -19,16 +19,23 @@ class SportMainPage extends StatefulWidget{
 }
 
 class _SportMainPageState extends State<SportMainPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<SportMainBloc>();
+    bloc.add(LoadUserSportList());
+  }
   @override
   Widget build(BuildContext context) {
     final userBloc = context.read<UserBloc>();
     final userId = userBloc.state.userId!;
     final name = userBloc.state.name;
-    final email = userBloc.state.email;
+    final email = userBloc.state.user!.email;
         return Scaffold(
             appBar: AppBar(
               title: const Text("Sport Summary",textAlign: TextAlign.center,),
-              backgroundColor: Colors.blueAccent,
+              backgroundColor: Color(0xFF599BF9),
               titleTextStyle: const TextStyle(
                   fontFamily: 'Itim',
                   fontSize: 25,
@@ -41,12 +48,8 @@ class _SportMainPageState extends State<SportMainPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: BlocBuilder<SportMainBloc,SportMainState>(
                   builder: (BuildContext context, SportMainState state) {
-                    if (state.status == SportMainStatus.loading) {
-                      return  const Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: CircularProgressIndicator()
-                      );
-                    }else {
+                    print(state.status);
+                    if (context.read<SportMainBloc>().state.sportSummary!=null && (context.read<SportMainBloc>().state.status== SportMainStatus.sportListLoaded || context.read<SportMainBloc>().state.status== SportMainStatus.noRecordFound )) {
                       final model = context.read<SportMainBloc>();
                       final sportList = model.state.sportList;
                       final summary = model.state.sportSummary;
@@ -89,71 +92,71 @@ class _SportMainPageState extends State<SportMainPage> {
                             ],
                           ),
                           (state.status == SportMainStatus.noRecordFound) ?
-                            Column(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Center(child: Text("No results found")),
-                                ),
-                                isToday ?
-                                ElevatedButton(onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          SearchSportScreen(
-                                              date: summary!.date),
-                                    ),
-                                  );
-                                },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blueAccent,
-                                      foregroundColor: Colors.white,
+                          Column(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(10.0),
+                                child: Center(child: Text("No results found")),
+                              ),
+                              isToday ?
+                              ElevatedButton(onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        SearchSportScreen(
+                                            date: context.read<SportMainBloc>().state.sportSummary!.date),
+                                  ),
+                                );
+                              },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    foregroundColor: Colors.white,
 
-                                      padding: const EdgeInsets.all(10),
-                                    ),
-                                    child: const Text("Add New Sport")) : const SizedBox.shrink(),
-                              ],
-                            ) :
+                                    padding: const EdgeInsets.all(10),
+                                  ),
+                                  child: const Text("Add New Sport")) : const SizedBox.shrink(),
+                            ],
+                          ) :
                           Column(
                             children: [
                               CaloriesChart(summary: summary!),
                               const SizedBox(height: 30),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8.0),
-                                    child: Text(
-                                      "Workout List",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                          fontFamily: 'Itim',
-                                          fontSize: 23,
-                                          fontWeight: FontWeight.bold
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: Text(
+                                        "Workout List",
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                            fontFamily: 'Itim',
+                                            fontSize: 23,
+                                            fontWeight: FontWeight.bold
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  isToday ?
-                                  ElevatedButton(onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            SearchSportScreen(
-                                                date: summary.date),
-                                      ),
-                                    );
-                                  },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blueAccent,
-                                        foregroundColor: Colors.white,
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(10),
-                                      ),
-                                      child: const Icon(Icons.add)): const SizedBox.shrink(),
-                                ]
+                                    isToday ?
+                                    ElevatedButton(onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              SearchSportScreen(
+                                                  date: summary.date),
+                                        ),
+                                      );
+                                    },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blueAccent,
+                                          foregroundColor: Colors.white,
+                                          shape: const CircleBorder(),
+                                          padding: const EdgeInsets.all(10),
+                                        ),
+                                        child: const Icon(Icons.add)): const SizedBox.shrink(),
+                                  ]
                               ),
 
                               ListView.builder(
@@ -167,11 +170,11 @@ class _SportMainPageState extends State<SportMainPage> {
                                     double totalCalsBurnt = summary
                                         .calsBurntByType[sportType]!;
                                     return SportCard(
-                                      totalCalsBurnt: totalCalsBurnt,
-                                      sportType: sportType,
-                                      // For each mealType, has one FoodIntake card
-                                      sports: sports,
-                                      date: model.state.date!
+                                        totalCalsBurnt: totalCalsBurnt,
+                                        sportType: sportType,
+                                        // For each mealType, has one FoodIntake card
+                                        sports: sports,
+                                        date: model.state.date!
                                     );
                                   })
                             ],
@@ -180,6 +183,12 @@ class _SportMainPageState extends State<SportMainPage> {
 
                         ],
                       );
+                    }else {
+                      return  const Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: CircularProgressIndicator()
+                      );
+
                     }
                     },
               ),

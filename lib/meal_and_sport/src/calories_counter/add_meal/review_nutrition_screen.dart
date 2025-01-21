@@ -19,7 +19,7 @@ class ReviewNutritionScreen extends StatefulWidget {
 }
 
 class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
-  // get the meal info from bloc
+  // get the meal info from blocs
 
   final _formKey = GlobalKey<FormState>();
 
@@ -48,7 +48,7 @@ class _ReviewNutritionScreenState extends State<ReviewNutritionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF599BF9),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),

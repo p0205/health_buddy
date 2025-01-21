@@ -21,7 +21,7 @@ class _AddSportScreenState extends State<AddSportScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF599BF9),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.popUntil(context, (route) => route.settings.name == "/sportMain")

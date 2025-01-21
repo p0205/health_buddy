@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/meal_summary.dart';
@@ -19,13 +20,23 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
     on<DeleteMealBtnClicked>(_delete);
     on<LoadUserIdAndDateEvent>(_loadIdAndDate);
     on<DateChangedEvent>(_onDateChanged);
+    on<NullGoalCaloriesEvent>(_nullGoalCalories);
+  }
+
+  Future<void> _nullGoalCalories (
+      NullGoalCaloriesEvent event,
+      Emitter<CaloriesCounterMainState> emit
+      )async{
+    emit(state.copyWith(status: CaloriesCounterMainStatus.goalCaloriesNotFound));
+
   }
 
   Future<void> _onDateChanged(
       DateChangedEvent event,
       Emitter<CaloriesCounterMainState> emit
       )async{
-    emit(state.copyWith(date: event.date));
+    print("Calories Date changed");
+    emit(state.copyWith(status: CaloriesCounterMainStatus.loading, date: event.date));
     add(LoadInitialDataEvent());
   }
   Future<void> _loadIdAndDate(
@@ -46,13 +57,13 @@ class CaloriesCounterMainBloc extends Bloc<CaloriesCounterMainEvent,CaloriesCoun
       LoadInitialDataEvent event,
       Emitter<CaloriesCounterMainState> emit
   )async{
-    print("INIT TT");
+    print("Calories Date load initial data");
     emit(state.copyWith(status: CaloriesCounterMainStatus.loading, mealList: {}));
     final mealList = await mealRepository.getUserMealListByDate(state.userId!, state.date!);
     final nutritionalSummary = await mealRepository.getNutritionalSummary(state.userId!, state.date!);
     emit(state.copyWith(status: CaloriesCounterMainStatus.mealListLoaded, mealList: mealList, summary: nutritionalSummary));
-    print("MEAL STATE");
-    print(state.status);
+    print("summary: calories intake");
+    print(state.summary?.caloriesIntake);
   }
 
   Future<void> _reload(
