@@ -102,6 +102,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       );
     }
 
+
+
+
     final bloc = context.read<UserBloc>();
     final id = bloc.state.userId;
 
@@ -116,8 +119,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     return Scaffold(
       appBar: AppBar(
           title: Text('Health Buddy',),
-          backgroundColor: Color(0xFF599BF9)
-
+          backgroundColor: Color(0xFF599BF9),
       ),
       drawer: SideBar(userId: id!, userEmail: context.read<UserBloc>().state.user!.email!,userName: context.read<UserBloc>().state.name!),
       body: SafeArea(
@@ -296,5 +298,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       ),
     );
   }
+
+
 }
 

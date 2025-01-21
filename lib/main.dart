@@ -70,9 +70,6 @@ void main() {
           BlocProvider<SportMainBloc>(
             create: (context) => SportMainBloc(),
           ),
-          BlocProvider<RiskBloc>(
-            create: (context) => RiskBloc(),
-          ),
           // Other Providers
           Provider(
             create: (context) => TodoRepository(),
