@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:health_buddy/performance_analysis/models/daily_performance.dart';
 
 class PerformanceRepository {
-  final apiUrl = 'https://192.168.0.14/api/performance/';
+  final apiUrl = 'https://192.168.137.30/api/performance/';
 
   Future<DailyPerformance> getPerformance(int userId, DateTime date) async {
     print("Fetching data...");
@@ -11,7 +11,7 @@ class PerformanceRepository {
 
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.0.14:5000/api/v1/performance/$userId/$formattedDate'),
+        Uri.parse('http://192.168.137.30:5000/api/v1/performance/$userId/$formattedDate'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
@@ -42,7 +42,7 @@ class PerformanceRepository {
     try {
       final response = await http.get(
         Uri.parse(
-            'http://192.168.0.14:5000/api/v1/monthlyPerformance/$userId/$formattedDate'),
+            'http://192.168.137.30:5000/api/v1/monthlyPerformance/$userId/$formattedDate'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
