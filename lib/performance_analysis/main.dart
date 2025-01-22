@@ -33,7 +33,7 @@ class PerformanceApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const PerformancePage(userId: 1),
+      home: const PerformancePage(userId: 1,),
     );
   }
 }

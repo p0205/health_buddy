@@ -197,7 +197,7 @@ class _GuidingDashboardState extends State<GuidingDashboard> {
                   value: context.read<CaloriesCounterMainBloc>(),
                 ),
               ],
-              child: MainMenuScreen(),
+              child: MainMenuScreen(userId: userId),
             ),
           ),
         );

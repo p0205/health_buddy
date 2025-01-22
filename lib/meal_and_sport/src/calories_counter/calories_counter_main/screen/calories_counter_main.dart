@@ -157,7 +157,7 @@ class _CaloriesCounterMainScreenState extends State<CaloriesCounterMainScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => MainMenuScreen(),
+                                      builder: (context) => MainMenuScreen(userId: userId),
                                     ),
                                   );
                                 },

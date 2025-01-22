@@ -1,7 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:health_buddy/meal_and_sport/src/user/blocs/user_bloc.dart';
 import 'package:health_buddy/performance_analysis/ui/section/trend_calendar.dart';
 import 'package:provider/provider.dart';
+import '../../../meal_and_sport/src/calories_counter/calories_counter_main/blocs/calories_counter_main_bloc.dart';
+import '../../../meal_and_sport/src/sport/sport_main/blocs/sport_main_bloc.dart';
 import '../../controllers/performance_controller.dart';
 import 'package:health_buddy/schedule_generator/src/core/enums/loading_state.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +32,8 @@ class _PerformancePageState extends State<PerformancePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Fetch tasks after the first frame is rendered
+      context.read<CaloriesCounterMainBloc>().add(DateChangedEvent(date: DateTime.now()));
+      context.read<SportMainBloc>().add(SportDateChangedEvent(date: DateTime.now()));
       Provider.of<PerformanceController>(context, listen: false)
           .fetchTodayPerformances(widget.userId, DateTime.now().subtract(Duration(days:1))
       );
@@ -45,6 +50,9 @@ class _PerformancePageState extends State<PerformancePage> {
 
   @override
   Widget build(BuildContext context) {
+    final double caloriesBurnt = (context.read<SportMainBloc>().state.sportSummary?.totalCalsBurnt ?? 0.0);
+    final double caloriesIntake = (context.read<CaloriesCounterMainBloc>().state.summary?.caloriesIntake ?? 0.0);
+
     return Consumer<PerformanceController>(
       builder: (context, performanceController, child) {
         if (performanceController.loadingState == LoadingState.loading) {
@@ -81,12 +89,12 @@ class _PerformancePageState extends State<PerformancePage> {
             ),
           );
         }
-        return _buildPerformancePage(performanceController);
+        return _buildPerformancePage(performanceController, caloriesBurnt, caloriesIntake);
       },
     );
   }
 
-  Widget _buildPerformancePage(PerformanceController performanceController) {
+  Widget _buildPerformancePage(PerformanceController performanceController, double caloriesBurnt, double caloriesIntake) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('PERFORMANCE'),
@@ -171,15 +179,16 @@ class _PerformancePageState extends State<PerformancePage> {
                         const SizedBox(height: 8),
                         SizedBox(
                           height: 300,
-                          child: PieChart(
+                          child: performanceController.getTodayPerformances() != null && performanceController.getTodayPerformances()!.totalTask > 0
+                              ? PieChart(
                             PieChartData(
                               sections: [
                                 PieChartSectionData(
                                   color: Colors.green,
-                                  value: performanceController.getTodayPerformances() != null
+                                  value: performanceController.getTodayPerformances()!.completedTask > 0
                                       ? performanceController.getTodayPerformances()!.completedTask.toDouble()
-                                      : 0,
-                                  title: performanceController.getTodayPerformances() != null
+                                      : 1, // Set a minimum value of 1 to avoid zero
+                                  title: performanceController.getTodayPerformances()!.completedTask > 0
                                       ? performanceController.getTodayPerformances()!.totalPercentage.toString() + '%'
                                       : '0%',
                                   radius: 60,
@@ -191,12 +200,12 @@ class _PerformancePageState extends State<PerformancePage> {
                                 ),
                                 PieChartSectionData(
                                   color: Colors.red,
-                                  value: performanceController.getTodayPerformances() != null
+                                  value: (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask) > 0
                                       ? (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask).toDouble()
-                                      : 0,
-                                  title: performanceController.getTodayPerformances() != null
+                                      : 1, // Set a minimum value of 1 to avoid zero
+                                  title: (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask) > 0
                                       ? (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask).toString() + '%'
-                                      : '0%',
+                                      : '100%',
                                   radius: 60,
                                   titleStyle: const TextStyle(
                                     fontSize: 18,
@@ -208,7 +217,8 @@ class _PerformancePageState extends State<PerformancePage> {
                               centerSpaceRadius: 50,
                               sectionsSpace: 2,
                             ),
-                          ),
+                          )
+                              : Container(), // Display nothing if data is null or total task is 0
                         ),
                       ],
                     ),
@@ -235,8 +245,19 @@ class _PerformancePageState extends State<PerformancePage> {
                 ),
                 itemCount: 2,
                 itemBuilder: (context, index) {
-                  final tasks = ['Calories Burn', 'Calories Intake'];
-                  return TaskTrackerCard(task: tasks[index]);
+                  final tasks = [
+                    {
+                      'title': 'Calories Burnt',
+                      'maxvalue': 2000,
+                      'value': caloriesBurnt,
+                    },
+                    {
+                      'title': 'Calories Intake',
+                      'maxvalue': 2000,
+                      'value': caloriesIntake,
+                    }
+                  ];
+                  return TaskTrackerCard(task: tasks[index]['title'] as String, maxvalue: tasks[index]['maxvalue'] as double, value: tasks[index]['value'] as double);
                 },
               ),
               const SizedBox(height: 24),
@@ -442,7 +463,9 @@ class _PerformancePageState extends State<PerformancePage> {
 }
 class TaskTrackerCard extends StatelessWidget {
   final String task;
-  const TaskTrackerCard({required this.task, super.key});
+  final double maxvalue;
+  final double value;
+  const TaskTrackerCard({required this.task, required this.maxvalue, required this.value, super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -85,7 +85,7 @@ class _RiskQuestionnaireState extends State<RiskQuestionnaire> {
                                Navigator.pushReplacement(
                                  context,
                                  MaterialPageRoute(
-                                   builder: (context) => MainMenuScreen(),
+                                   builder: (context) => MainMenuScreen(userId: context.read<UserBloc>().state.userId!),
                                  ),
                                );
                              },

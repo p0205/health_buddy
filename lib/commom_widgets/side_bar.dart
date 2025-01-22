@@ -139,7 +139,7 @@ class SideBar extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MainMenuScreen(),
+                    builder: (context) => MainMenuScreen(userId: userId),
                   ),
                 );
               },

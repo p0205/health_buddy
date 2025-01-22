@@ -36,7 +36,8 @@ class PerformanceController extends ChangeNotifier {
 
       // Fetch from repository
       _todayPerformances = await _performanceRepository.getPerformance(userId, date);
-
+      print(_todayPerformances);
+      print("Performance fetched");
       _loadingState = LoadingState.loaded;
       notifyListeners();
     } catch (e) {

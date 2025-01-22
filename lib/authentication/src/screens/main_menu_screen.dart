@@ -16,6 +16,8 @@ import '../../../meal_and_sport/src/user/blocs/user_bloc.dart';
 import 'package:health_buddy/constants.dart' as Constants;
 
 import '../../../meal_and_sport/src/user/blocs/user_state.dart';
+import '../../../performance_analysis/controllers/performance_controller.dart';
+import '../../../performance_analysis/ui/pages/performance_page.dart';
 
 // Reusable Popup Dialog Function
 void showPopupDialog(BuildContext context, String message, {VoidCallback? onOkPressed}) {
@@ -43,7 +45,8 @@ void showPopupDialog(BuildContext context, String message, {VoidCallback? onOkPr
 class MainMenuScreen extends StatefulWidget {
 
   // Constructor to receive the token
-  const MainMenuScreen({super.key});
+  final int userId;
+  const MainMenuScreen({super.key, required this.userId});
 
   @override
   State<MainMenuScreen> createState() => _MainMenuScreenState();
@@ -58,13 +61,19 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     // Trigger loading events
     print("Initstate of main page");
 
-    context.read<CaloriesCounterMainBloc>().add(DateChangedEvent(date: DateTime.now()));
-    context.read<SportMainBloc>().add(SportDateChangedEvent(date: DateTime.now()));
-    print(context.read<CaloriesCounterMainBloc>().state.status);
-    print(context.read<SportMainBloc>().state.status);
+
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CaloriesCounterMainBloc>().add(DateChangedEvent(date: DateTime.now()));
+      context.read<SportMainBloc>().add(SportDateChangedEvent(date: DateTime.now()));
+      context.read<PerformanceController>().fetchTodayPerformances(widget.userId, DateTime.now());
+      print(context.read<CaloriesCounterMainBloc>().state.status);
+      print(context.read<SportMainBloc>().state.status);
+    });
   }
   @override
   Widget build(BuildContext context) {
+    final performanceController = context.watch<PerformanceController>();
 
     toCaloriesBurntPage() {
       final bloc = context.read<SportMainBloc>();
@@ -190,15 +199,34 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                   padding: EdgeInsets.all(16.0),
                                   children: [
                                     _buildStatCard(title: 'Task Completed',
-                                        value: '0',
-                                        icon: Icons.task_alt),
+                                        value: '${performanceController.getTodayPerformances()?.completedTask ?? 0}',
+                                        icon: Icons.task_alt,
+                                        onTap: () {
+                                          //Navigate to performance page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => PerformancePage(userId: widget.userId, ),
+                                            ),
+                                          );
+                                        },),
                                     _buildStatCard(title: 'Calories Burned',
                                         value: '$caloriesBurnt kcal',
                                         icon: Icons.local_fire_department,
                                         onTap: toCaloriesBurntPage),
                                     _buildStatCard(title: 'Today Performance',
-                                        value: '0%',
-                                        icon: Icons.show_chart),
+                                        value: '${performanceController.getTodayPerformances()?.totalPercentage?.toStringAsFixed(2) ?? '0'}%',
+                                        icon: Icons.show_chart,
+                                      onTap: () {
+                                        //Navigate to performance page
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => PerformancePage(userId: widget.userId),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                     _buildStatCard(title: 'Calories Intake',
                                         value: '$caloriesIntake kcal',
                                         icon: Icons.restaurant,

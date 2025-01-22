@@ -290,10 +290,10 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
         showDialog(
           context: context,
           builder: (BuildContext context) => EditTaskForm(
-              user: this.widget.user,
-              todoTask: todoTask,
-              date: this.widget.date
-          ),  // Properly return the widget
+            user: this.widget.user,
+            todoTask: todoTask,
+            date: this.widget.date,
+          ),
         );
       },
       child: Container(
@@ -316,30 +316,22 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
           ),
-          trailing: Container(
-            width: 1,
-            height: 1,
-            child: Checkbox(
-              value: todoTask.isComplete,
-              onChanged: (value) {
-                if (todoTask.isComplete == true) {
-                  todoTask.isComplete = false;
-                } else {
-                  todoTask.isComplete = true;
-                }
-                final updatedTask = TodoTask(
-                  id: todoTask.id,
-                  title: todoTask.title,
-                  description: todoTask.description,
-                  startTime: todoTask.startTime,
-                  endTime: todoTask.endTime,
-                  isComplete: todoTask.isComplete,
-                  type: todoTask.type,
-                );
-                Provider.of<TodoController>(context, listen: false)
-                    .updateTodoTask(updatedTask, this.widget.date, this.widget.user);
-              },
-            ),
+          trailing: Checkbox(
+            value: todoTask.isComplete,
+            onChanged: (value) {
+              todoTask.isComplete = value ?? false;
+              final updatedTask = TodoTask(
+                id: todoTask.id,
+                title: todoTask.title,
+                description: todoTask.description,
+                startTime: todoTask.startTime,
+                endTime: todoTask.endTime,
+                isComplete: todoTask.isComplete,
+                type: todoTask.type,
+              );
+              Provider.of<TodoController>(context, listen: false)
+                  .updateTodoTask(updatedTask, this.widget.date, this.widget.user);
+            },
           ),
         ),
       ),

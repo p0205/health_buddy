@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     value: context.read<CaloriesCounterMainBloc>(),
                   ),
                 ],
-                child: MainMenuScreen(),
+                child: MainMenuScreen(userId: context.read<SportMainBloc>().state.userId??0),
               ),
             ),
           );
