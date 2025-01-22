@@ -36,8 +36,9 @@ class PerformanceController extends ChangeNotifier {
 
       // Fetch from repository
       _todayPerformances = await _performanceRepository.getPerformance(userId, date);
-      print(_todayPerformances);
-      print("Performance fetched");
+
+      print(_todayPerformances?.totalTask.toString());
+
       _loadingState = LoadingState.loaded;
       notifyListeners();
     } catch (e) {
@@ -50,8 +51,6 @@ class PerformanceController extends ChangeNotifier {
   // Method to fetch monthly performances without caching
   Future<void> fetchMonthlyPerformances(int userId, DateTime date) async {
     try {
-      _loadingState = LoadingState.loading;
-      notifyListeners();
 
       // Fetch from repository
       _monthlyPerformances = await _performanceRepository.getMonthlyPerformance(userId, date);

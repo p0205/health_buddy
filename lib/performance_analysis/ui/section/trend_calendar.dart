@@ -38,8 +38,8 @@ class _TrendCalenderState extends State<TrendCalender> {
 
       // Fetch data in parallel
       await Future.wait([
-        controller.fetchTodayPerformances(widget.userId, yesterday),
-        controller.fetchMonthlyPerformances(widget.userId, yesterday),
+        controller.fetchTodayPerformances(widget.userId, DateTime.now()),
+        controller.fetchMonthlyPerformances(widget.userId, DateTime.now()),
       ]);
 
       if (mounted) {

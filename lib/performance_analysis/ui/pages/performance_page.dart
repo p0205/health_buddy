@@ -23,7 +23,7 @@ class _PerformancePageState extends State<PerformancePage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime _selectedWeekStart = DateTime.now().subtract(
-      Duration(days: DateTime.now().weekday - 1)
+    Duration(days: (DateTime.now().weekday % 7) - 1),
   );
 
   @override
@@ -35,7 +35,7 @@ class _PerformancePageState extends State<PerformancePage> {
       context.read<CaloriesCounterMainBloc>().add(DateChangedEvent(date: DateTime.now()));
       context.read<SportMainBloc>().add(SportDateChangedEvent(date: DateTime.now()));
       Provider.of<PerformanceController>(context, listen: false)
-          .fetchTodayPerformances(widget.userId, DateTime.now().subtract(Duration(days:1))
+          .fetchTodayPerformances(widget.userId, DateTime.now()
       );
     });
   }
@@ -52,6 +52,7 @@ class _PerformancePageState extends State<PerformancePage> {
   Widget build(BuildContext context) {
     final double caloriesBurnt = (context.read<SportMainBloc>().state.sportSummary?.totalCalsBurnt ?? 0.0);
     final double caloriesIntake = (context.read<CaloriesCounterMainBloc>().state.summary?.caloriesIntake ?? 0.0);
+    print(caloriesIntake);
 
     return Consumer<PerformanceController>(
       builder: (context, performanceController, child) {
@@ -95,6 +96,8 @@ class _PerformancePageState extends State<PerformancePage> {
   }
 
   Widget _buildPerformancePage(PerformanceController performanceController, double caloriesBurnt, double caloriesIntake) {
+    print(performanceController.getTodayPerformances()?.totalTask.toString());
+    final double caloriesGoal = context.read<UserBloc>().state.user?.goalCalories?.toDouble() ?? 0.0;
     return Scaffold(
       appBar: AppBar(
         title: const Text('PERFORMANCE'),
@@ -204,7 +207,9 @@ class _PerformancePageState extends State<PerformancePage> {
                                       ? (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask).toDouble()
                                       : 1, // Set a minimum value of 1 to avoid zero
                                   title: (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask) > 0
-                                      ? (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask).toString() + '%'
+                                      ? ((performanceController.getTodayPerformances()!.totalTask
+                                      - performanceController.getTodayPerformances()!.completedTask)
+                                      / performanceController.getTodayPerformances()!.totalTask *100).toString() + '%'
                                       : '100%',
                                   radius: 60,
                                   titleStyle: const TextStyle(
@@ -248,13 +253,13 @@ class _PerformancePageState extends State<PerformancePage> {
                   final tasks = [
                     {
                       'title': 'Calories Burnt',
-                      'maxvalue': 2000,
-                      'value': caloriesBurnt,
+                      'maxvalue': caloriesGoal as double,
+                      'value': caloriesBurnt as double,
                     },
                     {
                       'title': 'Calories Intake',
-                      'maxvalue': 2000,
-                      'value': caloriesIntake,
+                      'maxvalue': caloriesGoal as double,
+                      'value': caloriesIntake as double,
                     }
                   ];
                   return TaskTrackerCard(task: tasks[index]['title'] as String, maxvalue: tasks[index]['maxvalue'] as double, value: tasks[index]['value'] as double);
@@ -409,7 +414,8 @@ class _PerformancePageState extends State<PerformancePage> {
 
   List<BarChartGroupData> _createDailyBarGroups(Map<int, double> dailyData) {
     return List.generate(7, (index) {
-      final percentage = dailyData[index + 1] ?? 0.0;
+      // Ensure alignment of index and data
+      final percentage = dailyData[index] ?? 0.0;
       return BarChartGroupData(
         x: index,
         barRods: [
@@ -439,28 +445,30 @@ class _PerformancePageState extends State<PerformancePage> {
     for (var i = 0; i < 7; i++) {
       DateTime currentDay = _selectedWeekStart.add(Duration(days: i));
 
-      // Find performance data for the current day
+      // Adjust index to match Sunday correctly
+      int index = currentDay.weekday % 7; // Converts Sunday (7) to index 0
       var dayPerformance = monthlyPerformances.firstWhere(
             (performance) =>
         performance.date.year == currentDay.year &&
             performance.date.month == currentDay.month &&
             performance.date.day == currentDay.day,
         orElse: () => DailyPerformance(
-            date: currentDay,
-            totalTask: 0,
-            completedTask: 0,
-            totalPercentage: 0,
-            id: 0,
-            userId: 0
+          date: currentDay,
+          totalTask: 0,
+          completedTask: 0,
+          totalPercentage: 0,
+          id: 0,
+          userId: 0,
         ),
       );
 
-      dailyPerformances[i] = dayPerformance.totalPercentage.toDouble();
+      dailyPerformances[index] = dayPerformance.totalPercentage.toDouble();
     }
 
     return dailyPerformances;
   }
 }
+
 class TaskTrackerCard extends StatelessWidget {
   final String task;
   final double maxvalue;
@@ -469,6 +477,7 @@ class TaskTrackerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final percentage = (value / maxvalue) * 100;
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -483,13 +492,13 @@ class TaskTrackerCard extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 CircularProgressIndicator(
-                  value: 0.5,
+                  value: value / maxvalue,
                   color: Colors.purple,
                   backgroundColor: Colors.grey.shade200,
                   strokeWidth: 6,
                 ),
-                const Text(
-                  '50%',
+                 Text(
+                  percentage.toString() +'%',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
