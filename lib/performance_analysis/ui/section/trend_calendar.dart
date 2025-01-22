@@ -22,7 +22,6 @@ class _TrendCalenderState extends State<TrendCalender> {
   late DateTime _selectedDay;
   late DateTime _focusedDay;
   late Map<DateTime, double> _percentages = {}; // Initialize with empty map
-
   @override
   void initState() {
     super.initState();

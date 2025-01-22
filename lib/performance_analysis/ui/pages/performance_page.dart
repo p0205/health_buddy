@@ -192,7 +192,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                       ? performanceController.getTodayPerformances()!.completedTask.toDouble()
                                       : 1, // Set a minimum value of 1 to avoid zero
                                   title: performanceController.getTodayPerformances()!.completedTask > 0
-                                      ? performanceController.getTodayPerformances()!.totalPercentage.toString() + '%'
+                                      ? performanceController.getTodayPerformances()!.totalPercentage.toStringAsFixed(2) + '%'
                                       : '0%',
                                   radius: 60,
                                   titleStyle: const TextStyle(
@@ -209,7 +209,7 @@ class _PerformancePageState extends State<PerformancePage> {
                                   title: (performanceController.getTodayPerformances()!.totalTask - performanceController.getTodayPerformances()!.completedTask) > 0
                                       ? ((performanceController.getTodayPerformances()!.totalTask
                                       - performanceController.getTodayPerformances()!.completedTask)
-                                      / performanceController.getTodayPerformances()!.totalTask *100).toString() + '%'
+                                      / performanceController.getTodayPerformances()!.totalTask *100).toStringAsFixed(2) + '%'
                                       : '100%',
                                   radius: 60,
                                   titleStyle: const TextStyle(
@@ -498,7 +498,7 @@ class TaskTrackerCard extends StatelessWidget {
                   strokeWidth: 6,
                 ),
                  Text(
-                  percentage.toString() +'%',
+                   percentage.toStringAsFixed(2) + '%',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

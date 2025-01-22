@@ -12,7 +12,7 @@ class PerformanceRepository {
     try {
       final response = await http.get(
         Uri.parse(
-            "${Constants.BaseUrl}${Constants.SchedulePort}/api/v1/performance/$userId/$formattedDate"),
+            "${Constants.ScheduleUrl}${Constants.SchedulePort}/api/v1/performance/$userId/$formattedDate"),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -63,7 +63,7 @@ class PerformanceRepository {
     try {
       final response = await http.get(
         Uri.parse(
-            Constants.BaseUrl+Constants.SchedulePort+'/api/v1/monthlyPerformance/$userId/$formattedDate'),
+            Constants.ScheduleUrl+Constants.SchedulePort+'/api/v1/monthlyPerformance/$userId/$formattedDate'),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"

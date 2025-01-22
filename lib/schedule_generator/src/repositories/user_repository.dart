@@ -17,7 +17,7 @@ class UserRepository {
       // Fetch user by sending a GET request
       final userResponse = await http.get(
 
-        Uri.parse(Constants.BaseUrl + Constants.SchedulePort + '/api/v1/user/'+userId), //change api url - ip address needed if using physical device
+        Uri.parse(Constants.ScheduleUrl + Constants.SchedulePort + '/api/v1/user/'+userId), //change api url - ip address needed if using physical device
 
         headers: {
           "Content-Type": "application/json",
